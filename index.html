@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咲 সাকুরা মার্কেট - জাপানিজ স্টাইল স্ট্যাম্প ও পয়েন্ট সিস্টেম</title>
-    <!-- 1280x720 PNG এক্সপোর্ট এবং QR কোডের জন্য লাইব্রেরি -->
+    <title>咲 সাকুরা মার্কেট - প্রো পয়েন্ট ও ম্যানেজমেন্ট সিস্টেম</title>
+    <!-- HTML2Canvas & QR Code Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #151c2c;
+            --text-color: #f8fafc;
+            --border-color: #28344e;
+            --accent-color: #f43f5e;
+        }
+
+        .light-mode {
+            --bg-color: #f1f5f9;
+            --panel-bg: #ffffff;
+            --text-color: #0f172a;
+            --border-color: #cbd5e1;
+            --accent-color: #e11d48;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,21 +32,23 @@
         }
 
         body {
-            background-color: #0b0f19;
-            color: #f8fafc;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding: 20px;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
         header {
             text-align: center;
             margin-bottom: 25px;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
+            position: relative;
         }
 
         header h1 {
-            color: #f43f5e;
+            color: var(--accent-color);
             font-size: 26px;
             letter-spacing: 1px;
         }
@@ -41,20 +59,34 @@
             margin-top: 4px;
         }
 
+        .theme-toggle-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--border-color);
+            color: var(--text-color);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         .dashboard-container {
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
-            max-width: 1200px;
+            max-width: 1250px;
             margin: 0 auto;
         }
 
         .panel {
-            background: #151c2c;
-            border: 1px solid #28344e;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             flex: 1;
             min-width: 380px;
         }
@@ -62,8 +94,8 @@
         .panel h2 {
             font-size: 15px;
             margin-bottom: 15px;
-            color: #f8fafc;
-            border-bottom: 2px solid #28344e;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 8px;
             display: flex;
             justify-content: space-between;
@@ -85,22 +117,22 @@
         .form-group input, .form-group select {
             width: 100%;
             padding: 10px 12px;
-            background: #0b0f19;
-            border: 1px solid #28344e;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            color: white;
+            color: var(--text-color);
             font-size: 14px;
         }
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #f43f5e;
+            border-color: var(--accent-color);
         }
 
         .search-box input {
-            background: #0b0f19;
-            border: 1px solid #f43f5e;
-            color: #f8fafc;
+            background: var(--bg-color);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
             font-weight: bold;
         }
 
@@ -124,7 +156,12 @@
 
         .btn-download {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            margin-top: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-excel {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            margin-top: 8px;
         }
 
         .btn-reset {
@@ -132,7 +169,30 @@
             margin-top: 8px;
         }
 
-        /* জন্মদিনের পপআপ নোটিফিকেশন বক্স স্টাইল */
+        .btn-delete-row {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        /* জন্মদিনের পপআপ মোডাল */
         #birthdayPopupModal {
             position: fixed;
             top: 0;
@@ -302,7 +362,6 @@
             margin-top: 2px;
         }
 
-        /* ১০টি স্ট্যাম্প সার্কেল */
         .stamp-section {
             z-index: 1;
             background: rgba(0, 0, 0, 0.35);
@@ -410,7 +469,6 @@
             color: #64748b;
         }
 
-        /* ড্যাশবোর্ড টেবিল ও উইজেট (একক কার্ড হিসেবে মোট বিক্রি) */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -419,8 +477,8 @@
         }
 
         .stat-card {
-            background: #0b0f19;
-            border: 1px solid #28344e;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
             padding: 12px;
             border-radius: 8px;
             text-align: center;
@@ -434,14 +492,14 @@
         .stat-card p {
             font-size: 18px;
             font-weight: bold;
-            color: #f8fafc;
+            color: var(--text-color);
             margin-top: 3px;
         }
 
         .table-container {
             max-height: 220px;
             overflow-y: auto;
-            border: 1px solid #28344e;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             margin-top: 10px;
         }
@@ -455,22 +513,22 @@
 
         th, td {
             padding: 8px 10px;
-            border-bottom: 1px solid #28344e;
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
-            background-color: #0b0f19;
+            background-color: var(--bg-color);
             color: #94a3b8;
             position: sticky;
             top: 0;
         }
 
         td {
-            color: #cbd5e1;
+            color: var(--text-color);
         }
 
         .customer-summary-card {
-            background: #0b0f19;
+            background: var(--bg-color);
             border: 1px solid #f59e0b;
             padding: 12px;
             border-radius: 8px;
@@ -487,8 +545,18 @@
 
         .summary-details {
             font-size: 11px;
-            color: #cbd5e1;
+            color: var(--text-color);
             line-height: 1.5;
+        }
+
+        .vip-badge {
+            background: #f59e0b;
+            color: #0b0f19;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -498,21 +566,22 @@
     <div id="birthdayPopupModal">
         <div class="modal-content">
             <h3>🎉 বিশেষ জন্মদিনের শুভেচ্ছা! 🎂</h3>
-            <p id="birthdayPopupText">আজকে জন্মদিনের কাস্টমার রয়েছে!</p>
+            <p id="birthdayPopupText">আজকে জন্মদিনের কাস্টমার রয়েছে!</p>
             <button class="btn" onclick="closeBirthdayModal()">ধন্যবাদ (ঠিক আছে)</button>
         </div>
     </div>
 
     <header>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️/🌙 থিম</button>
         <h1>咲 সাকুরা মার্কেট (SAKURA MARKET)</h1>
-        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড ও ডিজিটাল হিসাব রেজিস্টার</p>
+        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড, পয়েন্ট রিডেম্পশন ও ম্যানেজমেন্ট সিস্টেম</p>
     </header>
 
     <div class="dashboard-container">
         
-        <!-- প্যানেল ১: সেল এন্ট্রি ও প্রিন্ট করার কার্ড -->
+        <!-- প্যানেল ১: সেল এন্ট্রি ও পয়েন্ট রিডেম্পশন -->
         <div class="panel">
-            <h2>১. পয়েন্ট ও স্ট্যাম্প রেজিস্টার</h2>
+            <h2>১. পয়েন্ট, স্ট্যাম্প ও রিওয়ার্ড রেজিস্টার</h2>
             <div class="form-group">
                 <label>গ্রাহকের নাম (Customer Name):</label>
                 <input type="text" id="custName" value="রহিম আহমেদ">
@@ -522,10 +591,17 @@
                 <input type="date" id="custBirthday" value="1995-10-13">
             </div>
             <div class="form-group">
-                <label>ক্রয়ের পরিমাণ (টাকা):</label>
+                <label>পরিমাণ (টাকা বা পয়েন্ট রিডেম্পশন):</label>
                 <input type="number" id="purchaseAmount" value="250">
             </div>
-            <button class="btn" onclick="processTransaction()">বিক্রি রেকর্ড করুন ও পয়েন্ট যোগ করুন</button>
+            <div class="form-group">
+                <label>লেনদেনের ধরন (Transaction Type):</label>
+                <select id="transType">
+                    <option value="sale">সাধারণ কেনাকাটা (পয়েন্ট জমা)</option>
+                    <option value="redeem">পয়েন্ট রিডেম্পশন / খরচ (Points Spend)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="processTransaction()">লেনদেন সম্পন্ন করুন</button>
 
             <!-- কার্ড প্রিভিউ -->
             <div class="points-card" id="pointsCard">
@@ -548,11 +624,10 @@
                     </div>
                     <div class="points-box">
                         <div class="points-value">২৫০ টাকা = ০.৫ পয়েন্ট</div>
-                        <div class="points-rule-text">১০ স্ট্যাম্প = বিশেষ ছাড়</div>
+                        <div class="points-rule-text">১০ স্ট্যাম্প = ৫% ফ্ল্যাট ছাড়</div>
                     </div>
                 </div>
 
-                <!-- ১০টি সিল সার্কেল -->
                 <div class="stamp-section">
                     <div class="stamp-title">বিশেষ ডিসকাউন্টের জন্য ১০টি স্ট্যাম্প সংগ্রহ করুন</div>
                     <div class="stamp-grid">
@@ -584,23 +659,23 @@
                 </div>
             </div>
 
-            <button class="btn btn-download" onclick="downloadBlankTemplate()">খালি কার্ড ডাউনলোড করুন (একসাথে ১০০টি প্রিন্ট করতে)</button>
+            <button class="btn btn-download" onclick="downloadBlankTemplate()">খালি কার্ড ডাউনলোড করুন (প্রিন্ট)</button>
         </div>
 
-        <!-- প্যানেল ২: কাস্টমার সার্চ ও লেজার -->
+        <!-- প্যানেল ২: কাস্টমার সার্চ, লেজার ও এক্সেল ব্যাকআপ -->
         <div class="panel">
-            <h2>২. কাস্টমার পয়েন্ট ও মোট বিক্রির হিসাব</h2>
+            <h2>২. কাস্টমার ও বিক্রির ড্যাশবোর্ড</h2>
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h4>দোকানের মোট বিক্রি</h4>
+                    <h4>দোকানের মোট কার্যকর বিক্রি</h4>
                     <p id="totalSales">৳ ০</p>
                 </div>
             </div>
 
             <!-- সার্চ বক্স -->
             <div class="form-group search-box">
-                <label>🔍 কাস্টমার নাম দিয়ে খুঁজুন:</label>
+                <label>🔍 কাস্টমার নাম দিয়ে খুঁজুন (VIP টপ শপার সহ):</label>
                 <input type="text" id="searchName" placeholder="নাম লিখুন (যেমন: রহিম)..." oninput="filterCustomerData()">
             </div>
 
@@ -610,29 +685,31 @@
                 <div class="summary-details" id="summaryDetailsText">বিস্তারিত দেখতে কাস্টমার খুঁজুন।</div>
             </div>
 
-            <p style="font-size:11px; color:#94a3b8;">লেনদেনের ইতিহাস:</p>
+            <p style="font-size:11px; color:#94a3b8;">লেনদেনের ইতিহাস ও হোয়াটসঅ্যাপ রসিদ:</p>
             
             <div class="table-container">
                 <table id="salesTable">
                     <thead>
                         <tr>
-                            <th>তারিখ ও সময় (BST)</th>
+                            <th>সময় (BST)</th>
                             <th>নাম</th>
-                            <th>জন্মতারিখ</th>
-                            <th>বিক্রি (টাকা)</th>
-                            <th>পয়েন্ট</th>
+                            <th>ধরন</th>
+                            <th>টাকা</th>
+                            <th>পয়েন্ট</th>
+                            <th>রসিদ/অ্যাকশন</th>
                         </tr>
                     </thead>
                     <tbody id="salesTableBody">
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #64748b;">কোনো লেনদেন রেকর্ড করা হয়নি।</td>
+                            <td colspan="6" style="text-align: center; color: #64748b;">কোনো লেনদেন রেকর্ড করা হয়নি।</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <button class="btn" style="background:#475569; margin-top:15px;" onclick="window.print()">হিসাব প্রিন্ট করুন</button>
-            <button class="btn btn-reset" onclick="resetLedger()">সব হিসাব মুছে ফেলুন</button>
+            <button class="btn btn-excel" onclick="exportToCSV()">📥 এক্সেল শিটে (CSV) ব্যাকআপ ডাউনলোড করুন</button>
+            <button class="btn" style="background:#475569; margin-top:8px;" onclick="window.print()">হিসাব প্রিন্ট করুন</button>
+            <button class="btn btn-reset" onclick="resetLedgerWithPin()">সব হিসাব মুছে ফেলুন (পাসওয়ার্ড সুরক্ষিত)</button>
         </div>
 
     </div>
@@ -642,12 +719,13 @@
 
         window.onload = function() {
             checkTodayBirthdays();
-            if (salesData.length > 0) {
-                updateTallyDashboard();
-            } else {
-                processTransactionSilently();
-            }
+            updateTallyDashboard();
+            processTransactionSilently();
         };
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
 
         function getBangladeshDateTime() {
             const now = new Date();
@@ -689,38 +767,36 @@
             const nameInput = document.getElementById('custName');
             const bdayInput = document.getElementById('custBirthday');
             const amountInput = document.getElementById('purchaseAmount');
+            const transType = document.getElementById('transType').value;
 
             const name = nameInput.value.trim().toUpperCase();
             const birthday = bdayInput.value;
             const amount = parseFloat(amountInput.value);
 
             if (!name || isNaN(amount) || amount <= 0) {
-                alert("দয়া করে সঠিক কাস্টমার নাম এবং টাকার পরিমাণ লিখুন।");
+                alert("দয়া করে সঠিক কাস্টমার নাম এবং পরিমাণ লিখুন।");
                 return;
             }
 
-            const pointsEarned = (amount / 250) * 0.5;
+            let pointsChange = 0;
+            let netSale = amount;
+
+            if (transType === 'sale') {
+                pointsChange = (amount / 250) * 0.5;
+            } else {
+                pointsChange = -amount;
+                netSale = 0;
+            }
+
             const timeString = getBangladeshDateTime();
-
-            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট দেখতে চাই।`);
-            const whatsappUrl = `https://wa.me/8801341583215?text=${encodedMsg}`;
-
-            document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: whatsappUrl,
-                width: 42,
-                height: 42,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.M
-            });
 
             salesData.push({
                 time: timeString,
                 name: name,
                 birthday: birthday,
-                sales: amount,
-                points: pointsEarned
+                type: transType,
+                sales: netSale,
+                points: pointsChange
             });
 
             localStorage.setItem('sakuraSalesData', JSON.stringify(salesData));
@@ -747,9 +823,8 @@
         }
 
         function processTransactionSilently() {
-            const name = document.getElementById('custName').value.trim().toUpperCase();
-            
-            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট দেখতে চাই।`);
+            const name = document.getElementById('custName').value.trim().toUpperCase() || "SAKURA";
+            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট ও স্ট্যাম্প জানতে চাই।`);
             const whatsappUrl = `https://wa.me/8801341583215?text=${encodedMsg}`;
 
             document.getElementById("qrcode").innerHTML = "";
@@ -763,6 +838,23 @@
             });
         }
 
+        // ব্লক সমস্যা মুক্ত হোয়াটসঅ্যাপ রসিদ ফাংশন
+        function sendWhatsAppReceipt(name, sales, points) {
+            const msg = encodeURIComponent(`🌸 *সাকুরা মার্কেট - ডিজিটাল রসিদ* 🌸\nগ্রাহক: ${name}\nকেনাকাটা: ৳${sales}\nপয়েন্ট পরিবর্তন: ${points > 0 ? '+' : ''}${points.toFixed(1)} পই.\nধন্যবাদ আমাদের সাথে থাকার জন্য!`);
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${msg}`;
+            
+            // নতুন উইন্ডো অবজেক্টে ওপেন করা হয়েছে যাতে iframe পলিসি ব্লক না করতে পারে
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function deleteTransaction(index) {
+            if (confirm("আপনি কি এই এন্ট্রিটি মুছে ফেলতে চান?")) {
+                salesData.splice(index, 1);
+                localStorage.setItem('sakuraSalesData', JSON.stringify(salesData));
+                updateTallyDashboard();
+            }
+        }
+
         function updateTallyDashboard() {
             filterCustomerData();
         }
@@ -774,52 +866,84 @@
             tbody.innerHTML = '';
 
             let totalStoreSales = 0;
+            let customerTotals = {};
 
             salesData.forEach(item => {
-                totalStoreSales += item.sales;
+                if(item.type === 'sale') totalStoreSales += item.sales;
+                
+                if(!customerTotals[item.name]) customerTotals[item.name] = { sales: 0, points: 0 };
+                if(item.type === 'sale') customerTotals[item.name].sales += item.sales;
+                customerTotals[item.name].points += item.points;
             });
+
+            let topShopper = "";
+            let maxSpent = 0;
+            for(let cust in customerTotals) {
+                if(customerTotals[cust].sales > maxSpent) {
+                    maxSpent = customerTotals[cust].sales;
+                    topShopper = cust;
+                }
+            }
 
             document.getElementById('totalSales').innerText = `৳ ${totalStoreSales.toLocaleString()}`;
 
             const filteredData = searchQuery ? salesData.filter(item => item.name.includes(searchQuery)) : salesData;
 
             if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #64748b;">কোনো কাস্টমার পাওয়া যায়নি।</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b;">কোনো কাস্টমার পাওয়া যায়নি।</td></tr>`;
                 summaryBox.style.display = 'none';
                 return;
             }
 
             if (searchQuery) {
-                let searchedSales = 0;
-                let searchedPoints = 0;
-
-                filteredData.forEach(item => {
-                    searchedSales += item.sales;
-                    searchedPoints += item.points;
-                });
+                let searchedSales = customerTotals[searchQuery] ? customerTotals[searchQuery].sales : 0;
+                let searchedPoints = customerTotals[searchQuery] ? customerTotals[searchQuery].points : 0;
+                let isVip = (searchQuery === topShopper && maxSpent > 0);
 
                 summaryBox.style.display = 'block';
-                document.getElementById('summaryNameTitle').innerText = `কাস্টমার বিবরণ: ${searchQuery}`;
+                document.getElementById('summaryNameTitle').innerHTML = `কাস্টমার বিবরণ: ${searchQuery} ${isVip ? '<span class="vip-badge">👑 VIP Top Shopper</span>' : ''}`;
                 document.getElementById('summaryDetailsText').innerHTML = `
                     মোট কেনাকাটা: <strong>৳ ${searchedSales.toLocaleString()}</strong><br>
-                    মোট জমা পয়েন্ট: <strong style="color:#f59e0b;">${searchedPoints.toFixed(1)} পয়েন্ট</strong><br>
-                    মোট ভিজিট/লেনদেন: <strong>${filteredData.length} বার</strong>
+                    বর্তমান জমা পয়েন্ট: <strong style="color:#f59e0b;">${searchedPoints.toFixed(1)} পয়েন্ট</strong><br>
                 `;
             } else {
                 summaryBox.style.display = 'none';
             }
 
-            filteredData.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.time}</td>
-                    <td style="font-weight:600;">${item.name}</td>
-                    <td>${item.birthday || 'দেওয়া হয়নি'}</td>
-                    <td>৳ ${item.sales.toLocaleString()}</td>
-                    <td style="color:#f59e0b; font-weight:bold;">+${item.points.toFixed(1)} পই.</td>
-                `;
-                tbody.appendChild(row);
+            salesData.forEach((item, originalIndex) => {
+                if (!searchQuery || item.name.includes(searchQuery)) {
+                    const row = document.createElement('tr');
+                    let typeBadge = item.type === 'redeem' ? '<span style="color:#ef4444;">রিডেম্পশন</span>' : 'বিক্রি';
+                    let isTop = (item.name === topShopper && maxSpent > 0) ? '<span class="vip-badge">VIP</span>' : '';
+
+                    row.innerHTML = `
+                        <td>${item.time}</td>
+                        <td style="font-weight:600;">${item.name} ${isTop}</td>
+                        <td>${typeBadge}</td>
+                        <td>৳ ${item.sales.toLocaleString()}</td>
+                        <td style="color:#f59e0b; font-weight:bold;">${item.points >= 0 ? '+' : ''}${item.points.toFixed(1)} পই.</td>
+                        <td>
+                            <button class="btn-whatsapp" onclick="sendWhatsAppReceipt('${item.name}', ${item.sales}, ${item.points})">রসিদ</button>
+                            <button class="btn-delete-row" onclick="deleteTransaction(${originalIndex})">মুছুন</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
             });
+        }
+
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Time,Name,Birthday,Type,Sales,Points\n";
+            salesData.forEach(row => {
+                csvContent += `"${row.time}","${row.name}","${row.birthday || ''}","${row.type}","${row.sales}","${row.points}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "sakura_market_backup.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function downloadBlankTemplate() {
@@ -836,11 +960,16 @@
             });
         }
 
-        function resetLedger() {
-            if (confirm("আপনি কি সমস্ত হিসাব মুছে ফেলতে চান?")) {
-                localStorage.removeItem('sakuraSalesData');
-                salesData = [];
-                updateTallyDashboard();
+        function resetLedgerWithPin() {
+            const pin = prompt("নিরাপত্তা পিন কোড লিখুন (ডিফল্ট: 1234):");
+            if (pin === "1234") {
+                if (confirm("সতর্কতা: সমস্ত হিসাব স্থায়ীভাবে মুছে ফেলতে চান?")) {
+                    localStorage.removeItem('sakuraSalesData');
+                    salesData = [];
+                    updateTallyDashboard();
+                }
+            } else if (pin !== null) {
+                alert("ভুল পিন কোড!");
             }
         }
     </script>
