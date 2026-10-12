@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咲 সাকুরা মার্কেট - প্রো পয়েন্ট ও ম্যানেজমেন্ট সিস্টেম</title>
+    <title>咲 সাকুরা মার্কেট - গুগল শিট লাইভ সিঙ্ক</title>
     <!-- HTML2Canvas & QR Code Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -57,6 +58,16 @@
             color: #94a3b8;
             font-size: 13px;
             margin-top: 4px;
+        }
+
+        .live-status {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
         }
 
         .theme-toggle-btn {
@@ -150,9 +161,7 @@
             transition: opacity 0.2s;
         }
 
-        .btn:hover {
-            opacity: 0.9;
-        }
+        .btn:hover { opacity: 0.9; }
 
         .btn-download {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -183,22 +192,19 @@
         .btn-whatsapp {
             background: #25d366;
             color: white;
-            border: none;
+            text-decoration: none;
             padding: 4px 8px;
             border-radius: 4px;
-            cursor: pointer;
             font-size: 10px;
             font-weight: bold;
+            display: inline-block;
             margin-right: 4px;
         }
 
-        /* জন্মদিনের পপআপ মোডাল */
         #birthdayPopupModal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.8);
             display: none;
             justify-content: center;
@@ -218,19 +224,9 @@
             color: white;
         }
 
-        .modal-content h3 {
-            color: #fef08a;
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
+        .modal-content h3 { color: #fef08a; font-size: 22px; margin-bottom: 10px; }
+        .modal-content p { font-size: 15px; margin-bottom: 20px; line-height: 1.5; }
 
-        .modal-content p {
-            font-size: 15px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        /* জাপানিজ স্টাইল স্ট্যাম্প কার্ড */
         .points-card {
             width: 100%;
             max-width: 420px;
@@ -252,317 +248,76 @@
         .points-card::before {
             content: "咲";
             position: absolute;
-            top: -25px;
-            right: -10px;
+            top: -25px; right: -10px;
             font-size: 150px;
             color: rgba(255, 255, 255, 0.04);
             font-weight: bold;
             pointer-events: none;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .store-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .card-header { display: flex; justify-content: space-between; align-items: center; z-index: 1; }
+        .store-brand { display: flex; align-items: center; gap: 10px; }
         .store-logo {
-            width: 32px;
-            height: 32px;
-            background-color: #f59e0b;
-            color: #881337;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 17px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            width: 32px; height: 32px;
+            background-color: #f59e0b; color: #881337;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 17px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
+        .store-name { font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .japanese-sub { font-size: 9px; color: #fef08a; display: block; }
+        .card-type { font-size: 9px; background-color: #f59e0b; color: #4c0519; padding: 4px 8px; border-radius: 12px; font-weight: 800; }
 
-        .store-name {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        .card-middle { z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
+        .member-info { display: flex; flex-direction: column; width: 65%; }
+        .member-label { font-size: 9px; color: #fca5a5; font-weight: bold; }
+        .member-name-blank-line { border-bottom: 2px solid #fca5a5; height: 24px; margin-bottom: 4px; width: 100%; }
+        .card-number { font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #cbd5e1; }
 
-        .japanese-sub {
-            font-size: 9px;
-            color: #fef08a;
-            display: block;
-        }
+        .points-box { text-align: right; }
+        .points-value { font-size: 12px; font-weight: 800; color: #f59e0b; border: 1px solid #f59e0b; padding: 3px 6px; border-radius: 6px; background: rgba(0,0,0,0.3); }
+        .points-rule-text { font-size: 8px; color: #fca5a5; margin-top: 2px; }
 
-        .card-type {
-            font-size: 9px;
-            background-color: #f59e0b;
-            color: #4c0519;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: 800;
-        }
-
-        .card-middle {
-            z-index: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 2px;
-        }
-
-        .member-info {
-            display: flex;
-            flex-direction: column;
-            width: 65%;
-        }
-
-        .member-label {
-            font-size: 9px;
-            color: #fca5a5;
-            font-weight: bold;
-        }
-
-        .member-name-blank-line {
-            border-bottom: 2px solid #fca5a5;
-            height: 24px;
-            margin-bottom: 4px;
-            width: 100%;
-        }
-
-        .card-number {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 11px;
-            color: #cbd5e1;
-        }
-
-        .points-box {
-            text-align: right;
-        }
-
-        .points-value {
-            font-size: 12px;
-            font-weight: 800;
-            color: #f59e0b;
-            border: 1px solid #f59e0b;
-            padding: 3px 6px;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.3);
-        }
-
-        .points-rule-text {
-            font-size: 8px;
-            color: #fca5a5;
-            margin-top: 2px;
-        }
-
-        .stamp-section {
-            z-index: 1;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px dashed #f59e0b;
-            border-radius: 8px;
-            padding: 6px 8px;
-        }
-
-        .stamp-title {
-            font-size: 9px;
-            color: #fef08a;
-            text-align: center;
-            margin-bottom: 4px;
-            font-weight: 700;
-        }
-
-        .stamp-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 3px;
-        }
-
+        .stamp-section { z-index: 1; background: rgba(0, 0, 0, 0.35); border: 1px dashed #f59e0b; border-radius: 8px; padding: 6px 8px; }
+        .stamp-title { font-size: 9px; color: #fef08a; text-align: center; margin-bottom: 4px; font-weight: 700; }
+        .stamp-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
         .stamp-circle {
-            width: 100%;
-            height: 25px;
-            border: 1px solid #f59e0b;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: bold;
-            color: #fef08a;
-            background: rgba(255, 255, 255, 0.05);
+            width: 100%; height: 25px; border: 1px solid #f59e0b; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8px; font-weight: bold; color: #fef08a; background: rgba(255, 255, 255, 0.05);
             position: relative;
         }
+        .stamp-circle::after { content: "印"; font-size: 6px; color: rgba(245, 158, 11, 0.3); position: absolute; bottom: 1px; }
 
-        .stamp-circle::after {
-            content: "印";
-            font-size: 6px;
-            color: rgba(245, 158, 11, 0.3);
-            position: absolute;
-            bottom: 1px;
-        }
+        .card-footer { z-index: 1; background-color: #ffffff; border-radius: 8px; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .qr-section { display: flex; align-items: center; gap: 8px; }
+        #qrcode { width: 42px; height: 42px; background: #fff; padding: 2px; border-radius: 4px; }
+        #qrcode img { width: 100%; height: 100%; }
+        .qr-text-info { display: flex; flex-direction: column; }
+        .qr-label { font-size: 8px; color: #0b0f19; font-weight: 800; }
+        .qr-phone-sub { font-size: 7.5px; color: #16a34a; font-weight: bold; font-family: monospace; }
+        .rewards-info { text-align: right; }
+        .points-rate { font-size: 9.5px; font-weight: 800; color: #881337; }
+        .issued-date { font-size: 7.5px; color: #64748b; }
 
-        .card-footer {
-            z-index: 1;
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 5px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px; }
+        .stat-card { background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card h4 { font-size: 11px; color: #94a3b8; }
+        .stat-card p { font-size: 18px; font-weight: bold; color: var(--text-color); margin-top: 3px; }
 
-        .qr-section {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .table-container { max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--bg-color); color: #94a3b8; position: sticky; top: 0; }
+        td { color: var(--text-color); }
 
-        #qrcode {
-            width: 42px;
-            height: 42px;
-            background: #fff;
-            padding: 2px;
-            border-radius: 4px;
-        }
-
-        #qrcode img {
-            width: 100%;
-            height: 100%;
-        }
-
-        .qr-text-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .qr-label {
-            font-size: 8px;
-            color: #0b0f19;
-            font-weight: 800;
-        }
-
-        .qr-phone-sub {
-            font-size: 7.5px;
-            color: #16a34a;
-            font-weight: bold;
-            font-family: monospace;
-        }
-
-        .rewards-info {
-            text-align: right;
-        }
-
-        .points-rate {
-            font-size: 9.5px;
-            font-weight: 800;
-            color: #881337;
-        }
-
-        .issued-date {
-            font-size: 7.5px;
-            color: #64748b;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .stat-card {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-card h4 {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .stat-card p {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-color);
-            margin-top: 3px;
-        }
-
-        .table-container {
-            max-height: 220px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--bg-color);
-            color: #94a3b8;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            color: var(--text-color);
-        }
-
-        .customer-summary-card {
-            background: var(--bg-color);
-            border: 1px solid #f59e0b;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .summary-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #f59e0b;
-            margin-bottom: 6px;
-        }
-
-        .summary-details {
-            font-size: 11px;
-            color: var(--text-color);
-            line-height: 1.5;
-        }
-
-        .vip-badge {
-            background: #f59e0b;
-            color: #0b0f19;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
+        .customer-summary-card { background: var(--bg-color); border: 1px solid #f59e0b; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: none; }
+        .summary-title { font-size: 12px; font-weight: bold; color: #f59e0b; margin-bottom: 6px; }
+        .summary-details { font-size: 11px; color: var(--text-color); line-height: 1.5; }
+        .vip-badge { background: #f59e0b; color: #0b0f19; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- জন্মদিনের পপআপ মোডাল -->
     <div id="birthdayPopupModal">
         <div class="modal-content">
             <h3>🎉 বিশেষ জন্মদিনের শুভেচ্ছা! 🎂</h3>
@@ -573,13 +328,12 @@
 
     <header>
         <button class="theme-toggle-btn" onclick="toggleTheme()">☀️/🌙 থিম</button>
-        <h1>咲 সাকুরা মার্কেট (SAKURA MARKET)</h1>
-        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড, পয়েন্ট রিডেম্পশন ও ম্যানেজমেন্ট সিস্টেম</p>
+        <h1>咲 সাকুরা মার্কেট <span class="live-status">GOOGLE SHEETS LIVE</span></h1>
+        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড ও গুগল শিট সিঙ্ক সিস্টেম</p>
     </header>
 
     <div class="dashboard-container">
         
-        <!-- প্যানেল ১: সেল এন্ট্রি ও পয়েন্ট রিডেম্পশন -->
         <div class="panel">
             <h2>১. পয়েন্ট, স্ট্যাম্প ও রিওয়ার্ড রেজিস্টার</h2>
             <div class="form-group">
@@ -601,9 +355,8 @@
                     <option value="redeem">পয়েন্ট রিডেম্পশন / খরচ (Points Spend)</option>
                 </select>
             </div>
-            <button class="btn" onclick="processTransaction()">লেনদেন সম্পন্ন করুন</button>
+            <button class="btn" id="saveBtn" onclick="processTransaction()">গুগল শিটে সেভ করুন</button>
 
-            <!-- কার্ড প্রিভিউ -->
             <div class="points-card" id="pointsCard">
                 <div class="card-header">
                     <div class="store-brand">
@@ -631,16 +384,11 @@
                 <div class="stamp-section">
                     <div class="stamp-title">বিশেষ ডিসকাউন্টের জন্য ১০টি স্ট্যাম্প সংগ্রহ করুন</div>
                     <div class="stamp-grid">
-                        <div class="stamp-circle">১</div>
-                        <div class="stamp-circle">২</div>
-                        <div class="stamp-circle">৩</div>
-                        <div class="stamp-circle">৪</div>
-                        <div class="stamp-circle">৫</div>
-                        <div class="stamp-circle">৬</div>
-                        <div class="stamp-circle">৭</div>
-                        <div class="stamp-circle">৮</div>
-                        <div class="stamp-circle">৯</div>
-                        <div class="stamp-circle">১০</div>
+                        <div class="stamp-circle">১</div><div class="stamp-circle">২</div>
+                        <div class="stamp-circle">৩</div><div class="stamp-circle">৪</div>
+                        <div class="stamp-circle">৫</div><div class="stamp-circle">৬</div>
+                        <div class="stamp-circle">৭</div><div class="stamp-circle">৮</div>
+                        <div class="stamp-circle">৯</div><div class="stamp-circle">১০</div>
                     </div>
                 </div>
 
@@ -654,7 +402,7 @@
                     </div>
                     <div class="rewards-info">
                         <div class="points-rate">সাকুরা মেম্বার</div>
-                        <div class="issued-date">২০২৬</div>
+                        <div class="issued-date">২০২০</div>
                     </div>
                 </div>
             </div>
@@ -662,9 +410,8 @@
             <button class="btn btn-download" onclick="downloadBlankTemplate()">খালি কার্ড ডাউনলোড করুন (প্রিন্ট)</button>
         </div>
 
-        <!-- প্যানেল ২: কাস্টমার সার্চ, লেজার ও এক্সেল ব্যাকআপ -->
         <div class="panel">
-            <h2>২. কাস্টমার ও বিক্রির ড্যাশবোর্ড</h2>
+            <h2>২. কাস্টমার ও বিক্রির ড্যাশবোর্ড (Google Sheet)</h2>
             
             <div class="stats-grid">
                 <div class="stat-card">
@@ -673,13 +420,11 @@
                 </div>
             </div>
 
-            <!-- সার্চ বক্স -->
             <div class="form-group search-box">
                 <label>🔍 কাস্টমার নাম দিয়ে খুঁজুন (VIP টপ শপার সহ):</label>
                 <input type="text" id="searchName" placeholder="নাম লিখুন (যেমন: রহিম)..." oninput="filterCustomerData()">
             </div>
 
-            <!-- কাস্টমার সামারি বক্স -->
             <div class="customer-summary-card" id="searchSummaryBox">
                 <div class="summary-title" id="summaryNameTitle">কাস্টমার সামারি</div>
                 <div class="summary-details" id="summaryDetailsText">বিস্তারিত দেখতে কাস্টমার খুঁজুন।</div>
@@ -701,7 +446,7 @@
                     </thead>
                     <tbody id="salesTableBody">
                         <tr>
-                            <td colspan="6" style="text-align: center; color: #64748b;">কোনো লেনদেন রেকর্ড করা হয়নি।</td>
+                            <td colspan="6" style="text-align: center; color: #64748b;">গুগল শিট থেকে ডাটা লোড হচ্ছে...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -715,11 +460,12 @@
     </div>
 
     <script>
-        let salesData = JSON.parse(localStorage.getItem('sakuraSalesData')) || [];
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7CcSLNRS5S7gd_Ym9VtEmTNlnO77mABcgU69WiK4Hf53Wdj0kO1oTTgRs4npCxPJXPA/exec";
+
+        let salesData = [];
 
         window.onload = function() {
-            checkTodayBirthdays();
-            updateTallyDashboard();
+            fetchSheetData();
             processTransactionSilently();
         };
 
@@ -730,6 +476,19 @@
         function getBangladeshDateTime() {
             const now = new Date();
             return now.toLocaleString('en-GB', { timeZone: 'Asia/Dhaka', hour12: true });
+        }
+
+        function fetchSheetData() {
+            fetch(SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    salesData = data;
+                    updateTallyDashboard();
+                    checkTodayBirthdays();
+                })
+                .catch(err => {
+                    document.getElementById('salesTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">ডাটা লোড করতে সমস্যা হয়েছে! Script URL ঠিক আছে কিনা দেখুন।</td></tr>`;
+                });
         }
 
         function checkTodayBirthdays() {
@@ -778,48 +537,35 @@
                 return;
             }
 
-            let pointsChange = 0;
-            let netSale = amount;
-
-            if (transType === 'sale') {
-                pointsChange = (amount / 250) * 0.5;
-            } else {
-                pointsChange = -amount;
-                netSale = 0;
-            }
-
+            let pointsChange = (transType === 'sale') ? (amount / 250) * 0.5 : -amount;
+            let netSale = (transType === 'sale') ? amount : 0;
             const timeString = getBangladeshDateTime();
 
-            salesData.push({
+            const newEntry = {
+                id: Date.now(),
                 time: timeString,
                 name: name,
                 birthday: birthday,
                 type: transType,
                 sales: netSale,
                 points: pointsChange
+            };
+
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "সেভ হচ্ছে...";
+            btn.disabled = true;
+
+            fetch(SCRIPT_URL + "?action=add", {
+                method: "POST",
+                body: JSON.stringify(newEntry)
+            })
+            .then(res => res.text())
+            .then(() => {
+                btn.innerText = "গুগল শিটে সেভ করুন";
+                btn.disabled = false;
+                alert("✅ গুগল শিটে সফলভাবে সেভ হয়েছে!");
+                fetchSheetData();
             });
-
-            localStorage.setItem('sakuraSalesData', JSON.stringify(salesData));
-            updateTallyDashboard();
-
-            const now = new Date();
-            const todayMonth = String(now.getMonth() + 1).padStart(2, '0');
-            const todayDay = String(now.getDate()).padStart(2, '0');
-            const todayMD = `${todayMonth}-${todayDay}`;
-
-            if (birthday) {
-                const parts = birthday.split('-');
-                if (parts.length === 3 && `${parts[1]}-${parts[2]}` === todayMD) {
-                    const modal = document.getElementById('birthdayPopupModal');
-                    const textElem = document.getElementById('birthdayPopupText');
-                    textElem.innerHTML = `🎉 দারুণ ব্যাপার! আজকে <strong>${name}</strong>-এর জন্মদিন! 🎂<br><br>তাকে জন্মদিনের শুভেচ্ছা জানান এবং বিশেষ উপহার/ডাবল পয়েন্ট দিন!`;
-                    modal.style.display = 'flex';
-                } else {
-                    alert("✅ লেনদেন সফলভাবে রেকর্ড করা হয়েছে!");
-                }
-            } else {
-                alert("✅ লেনদেন সফলভাবে রেকর্ড করা হয়েছে!");
-            }
         }
 
         function processTransactionSilently() {
@@ -830,28 +576,19 @@
             document.getElementById("qrcode").innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
                 text: whatsappUrl,
-                width: 42,
-                height: 42,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
+                width: 42, height: 42,
+                colorDark : "#000000", colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
             });
         }
 
-        // ব্লক সমস্যা মুক্ত হোয়াটসঅ্যাপ রসিদ ফাংশন
-        function sendWhatsAppReceipt(name, sales, points) {
-            const msg = encodeURIComponent(`🌸 *সাকুরা মার্কেট - ডিজিটাল রসিদ* 🌸\nগ্রাহক: ${name}\nকেনাকাটা: ৳${sales}\nপয়েন্ট পরিবর্তন: ${points > 0 ? '+' : ''}${points.toFixed(1)} পই.\nধন্যবাদ আমাদের সাথে থাকার জন্য!`);
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${msg}`;
-            
-            // নতুন উইন্ডো অবজেক্টে ওপেন করা হয়েছে যাতে iframe পলিসি ব্লক না করতে পারে
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        }
-
-        function deleteTransaction(index) {
+        function deleteTransaction(id) {
             if (confirm("আপনি কি এই এন্ট্রিটি মুছে ফেলতে চান?")) {
-                salesData.splice(index, 1);
-                localStorage.setItem('sakuraSalesData', JSON.stringify(salesData));
-                updateTallyDashboard();
+                fetch(SCRIPT_URL + "?action=delete&id=" + id, { method: "POST" })
+                .then(res => res.text())
+                .then(() => {
+                    fetchSheetData();
+                });
             }
         }
 
@@ -910,11 +647,14 @@
                 summaryBox.style.display = 'none';
             }
 
-            salesData.forEach((item, originalIndex) => {
+            salesData.forEach((item) => {
                 if (!searchQuery || item.name.includes(searchQuery)) {
                     const row = document.createElement('tr');
                     let typeBadge = item.type === 'redeem' ? '<span style="color:#ef4444;">রিডেম্পশন</span>' : 'বিক্রি';
                     let isTop = (item.name === topShopper && maxSpent > 0) ? '<span class="vip-badge">VIP</span>' : '';
+
+                    const receiptText = encodeURIComponent(`🌸 *সাকুরা মার্কেট - মেমো* 🌸\nগ্রাহক: ${item.name}\nকেনাকাটা: ৳${item.sales}\nপয়েন্ট: ${item.points > 0 ? '+' : ''}${item.points.toFixed(1)} পই.`);
+                    const waLink = `https://wa.me/?text=${receiptText}`;
 
                     row.innerHTML = `
                         <td>${item.time}</td>
@@ -923,8 +663,8 @@
                         <td>৳ ${item.sales.toLocaleString()}</td>
                         <td style="color:#f59e0b; font-weight:bold;">${item.points >= 0 ? '+' : ''}${item.points.toFixed(1)} পই.</td>
                         <td>
-                            <button class="btn-whatsapp" onclick="sendWhatsAppReceipt('${item.name}', ${item.sales}, ${item.points})">রসিদ</button>
-                            <button class="btn-delete-row" onclick="deleteTransaction(${originalIndex})">মুছুন</button>
+                            <a href="${waLink}" target="_top" class="btn-whatsapp">রসিদ</a>
+                            <button class="btn-delete-row" onclick="deleteTransaction(${item.id})">মুছুন</button>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -949,9 +689,7 @@
         function downloadBlankTemplate() {
             const cardElement = document.getElementById('pointsCard');
             html2canvas(cardElement, {
-                scale: 3,
-                useCORS: true,
-                backgroundColor: null
+                scale: 3, useCORS: true, backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'sakura_blank_stamp_card.png';
@@ -963,10 +701,12 @@
         function resetLedgerWithPin() {
             const pin = prompt("নিরাপত্তা পিন কোড লিখুন (ডিফল্ট: 1234):");
             if (pin === "1234") {
-                if (confirm("সতর্কতা: সমস্ত হিসাব স্থায়ীভাবে মুছে ফেলতে চান?")) {
-                    localStorage.removeItem('sakuraSalesData');
-                    salesData = [];
-                    updateTallyDashboard();
+                if (confirm("সতর্কতা: গুগল শিটের সমস্ত হিসাব স্থায়ীভাবে মুছে ফেলতে চান?")) {
+                    fetch(SCRIPT_URL + "?action=clearAll", { method: "POST" })
+                    .then(res => res.text())
+                    .then(() => {
+                        fetchSheetData();
+                    });
                 }
             } else if (pin !== null) {
                 alert("ভুল পিন কোড!");
