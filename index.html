@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咲 সাকুরা মার্কেট - জাপানিজ স্টাইল স্ট্যাম্প ও পয়েন্ট সিস্টেম</title>
+    <!-- 1280x720 PNG এক্সপোর্ট এবং QR কোডের জন্য লাইব্রেরি -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SolaimanLipi', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            color: #f43f5e;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: #151c2c;
+            border: 1px solid #28344e;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            flex: 1;
+            min-width: 380px;
+        }
+
+        .panel h2 {
+            font-size: 15px;
+            margin-bottom: 15px;
+            color: #f8fafc;
+            border-bottom: 2px solid #28344e;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0b0f19;
+            border: 1px solid #28344e;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #f43f5e;
+        }
+
+        .search-box input {
+            background: #0b0f19;
+            border: 1px solid #f43f5e;
+            color: #f8fafc;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 5px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            margin-top: 12px;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            margin-top: 8px;
+        }
+
+        /* জন্মদিনের পপআপ নোটিফিকেশন বক্স স্টাইল */
+        #birthdayPopupModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #881337 0%, #4c0519 100%);
+            border: 3px solid #f59e0b;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            color: white;
+        }
+
+        .modal-content h3 {
+            color: #fef08a;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* জাপানিজ স্টাইল স্ট্যাম্প কার্ড */
+        .points-card {
+            width: 100%;
+            max-width: 420px;
+            height: 260px;
+            background: linear-gradient(135deg, #881337 0%, #4c0519 60%, #1c0209 100%);
+            border-radius: 16px;
+            color: #ffffff;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin: 15px auto 0 auto;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            border: 2px solid #f59e0b;
+        }
+
+        .points-card::before {
+            content: "咲";
+            position: absolute;
+            top: -25px;
+            right: -10px;
+            font-size: 150px;
+            color: rgba(255, 255, 255, 0.04);
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .store-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .store-logo {
+            width: 32px;
+            height: 32px;
+            background-color: #f59e0b;
+            color: #881337;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 17px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .store-name {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .japanese-sub {
+            font-size: 9px;
+            color: #fef08a;
+            display: block;
+        }
+
+        .card-type {
+            font-size: 9px;
+            background-color: #f59e0b;
+            color: #4c0519;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 800;
+        }
+
+        .card-middle {
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 2px;
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            width: 65%;
+        }
+
+        .member-label {
+            font-size: 9px;
+            color: #fca5a5;
+            font-weight: bold;
+        }
+
+        .member-name-blank-line {
+            border-bottom: 2px solid #fca5a5;
+            height: 24px;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+
+        .card-number {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            color: #cbd5e1;
+        }
+
+        .points-box {
+            text-align: right;
+        }
+
+        .points-value {
+            font-size: 12px;
+            font-weight: 800;
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+            padding: 3px 6px;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .points-rule-text {
+            font-size: 8px;
+            color: #fca5a5;
+            margin-top: 2px;
+        }
+
+        /* ১০টি স্ট্যাম্প সার্কেল */
+        .stamp-section {
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px dashed #f59e0b;
+            border-radius: 8px;
+            padding: 6px 8px;
+        }
+
+        .stamp-title {
+            font-size: 9px;
+            color: #fef08a;
+            text-align: center;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .stamp-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 3px;
+        }
+
+        .stamp-circle {
+            width: 100%;
+            height: 25px;
+            border: 1px solid #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #fef08a;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .stamp-circle::after {
+            content: "印";
+            font-size: 6px;
+            color: rgba(245, 158, 11, 0.3);
+            position: absolute;
+            bottom: 1px;
+        }
+
+        .card-footer {
+            z-index: 1;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #qrcode {
+            width: 42px;
+            height: 42px;
+            background: #fff;
+            padding: 2px;
+            border-radius: 4px;
+        }
+
+        #qrcode img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-text-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qr-label {
+            font-size: 8px;
+            color: #0b0f19;
+            font-weight: 800;
+        }
+
+        .qr-phone-sub {
+            font-size: 7.5px;
+            color: #16a34a;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .rewards-info {
+            text-align: right;
+        }
+
+        .points-rate {
+            font-size: 9.5px;
+            font-weight: 800;
+            color: #881337;
+        }
+
+        .issued-date {
+            font-size: 7.5px;
+            color: #64748b;
+        }
+
+        /* ড্যাশবোর্ড টেবিল ও উইজেট (একক কার্ড হিসেবে মোট বিক্রি) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: #0b0f19;
+            border: 1px solid #28344e;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .stat-card p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f8fafc;
+            margin-top: 3px;
+        }
+
+        .table-container {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #28344e;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #28344e;
+        }
+
+        th {
+            background-color: #0b0f19;
+            color: #94a3b8;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            color: #cbd5e1;
+        }
+
+        .customer-summary-card {
+            background: #0b0f19;
+            border: 1px solid #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .summary-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-bottom: 6px;
+        }
+
+        .summary-details {
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- জন্মদিনের পপআপ মোডাল -->
+    <div id="birthdayPopupModal">
+        <div class="modal-content">
+            <h3>🎉 বিশেষ জন্মদিনের শুভেচ্ছা! 🎂</h3>
+            <p id="birthdayPopupText">আজকে জন্মদিনের কাস্টমার রয়েছে!</p>
+            <button class="btn" onclick="closeBirthdayModal()">ধন্যবাদ (ঠিক আছে)</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>咲 সাকুরা মার্কেট (SAKURA MARKET)</h1>
+        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড ও ডিজিটাল হিসাব রেজিস্টার</p>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- প্যানেল ১: সেল এন্ট্রি ও প্রিন্ট করার কার্ড -->
+        <div class="panel">
+            <h2>১. পয়েন্ট ও স্ট্যাম্প রেজিস্টার</h2>
+            <div class="form-group">
+                <label>গ্রাহকের নাম (Customer Name):</label>
+                <input type="text" id="custName" value="রহিম আহমেদ">
+            </div>
+            <div class="form-group">
+                <label>জন্মতারিখ (Birthday Date):</label>
+                <input type="date" id="custBirthday" value="1995-10-13">
+            </div>
+            <div class="form-group">
+                <label>ক্রয়ের পরিমাণ (টাকা):</label>
+                <input type="number" id="purchaseAmount" value="250">
+            </div>
+            <button class="btn" onclick="processTransaction()">বিক্রি রেকর্ড করুন ও পয়েন্ট যোগ করুন</button>
+
+            <!-- কার্ড প্রিভিউ -->
+            <div class="points-card" id="pointsCard">
+                <div class="card-header">
+                    <div class="store-brand">
+                        <div class="store-logo">咲</div>
+                        <div>
+                            <div class="store-name">সাকুরা মার্কেট</div>
+                            <span class="japanese-sub">スタンプカード (স্ট্যাম্প কার্ড)</span>
+                        </div>
+                    </div>
+                    <div class="card-type">মেম্বার কার্ড</div>
+                </div>
+
+                <div class="card-middle">
+                    <div class="member-info">
+                        <div class="member-label">নাম: ✍️ (এখানে হাতে লিখুন)</div>
+                        <div class="member-name-blank-line"></div>
+                        <div class="card-number">MEMBER STAMP CARD</div>
+                    </div>
+                    <div class="points-box">
+                        <div class="points-value">২৫০ টাকা = ০.৫ পয়েন্ট</div>
+                        <div class="points-rule-text">১০ স্ট্যাম্প = বিশেষ ছাড়</div>
+                    </div>
+                </div>
+
+                <!-- ১০টি সিল সার্কেল -->
+                <div class="stamp-section">
+                    <div class="stamp-title">বিশেষ ডিসকাউন্টের জন্য ১০টি স্ট্যাম্প সংগ্রহ করুন</div>
+                    <div class="stamp-grid">
+                        <div class="stamp-circle">১</div>
+                        <div class="stamp-circle">২</div>
+                        <div class="stamp-circle">৩</div>
+                        <div class="stamp-circle">৪</div>
+                        <div class="stamp-circle">৫</div>
+                        <div class="stamp-circle">৬</div>
+                        <div class="stamp-circle">৭</div>
+                        <div class="stamp-circle">৮</div>
+                        <div class="stamp-circle">৯</div>
+                        <div class="stamp-circle">১০</div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="qr-section">
+                        <div id="qrcode"></div>
+                        <div class="qr-text-info">
+                            <span class="qr-label">হোয়াটসঅ্যাপ স্ক্যান</span>
+                            <span class="qr-phone-sub">+8801341583215</span>
+                        </div>
+                    </div>
+                    <div class="rewards-info">
+                        <div class="points-rate">সাকুরা মেম্বার</div>
+                        <div class="issued-date">২০২৬</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-download" onclick="downloadBlankTemplate()">খালি কার্ড ডাউনলোড করুন (একসাথে ১০০টি প্রিন্ট করতে)</button>
+        </div>
+
+        <!-- প্যানেল ২: কাস্টমার সার্চ ও লেজার -->
+        <div class="panel">
+            <h2>২. কাস্টমার পয়েন্ট ও মোট বিক্রির হিসাব</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>দোকানের মোট বিক্রি</h4>
+                    <p id="totalSales">৳ ০</p>
+                </div>
+            </div>
+
+            <!-- সার্চ বক্স -->
+            <div class="form-group search-box">
+                <label>🔍 কাস্টমার নাম দিয়ে খুঁজুন:</label>
+                <input type="text" id="searchName" placeholder="নাম লিখুন (যেমন: রহিম)..." oninput="filterCustomerData()">
+            </div>
+
+            <!-- কাস্টমার সামারি বক্স -->
+            <div class="customer-summary-card" id="searchSummaryBox">
+                <div class="summary-title" id="summaryNameTitle">কাস্টমার সামারি</div>
+                <div class="summary-details" id="summaryDetailsText">বিস্তারিত দেখতে কাস্টমার খুঁজুন।</div>
+            </div>
+
+            <p style="font-size:11px; color:#94a3b8;">লেনদেনের ইতিহাস:</p>
+            
+            <div class="table-container">
+                <table id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>তারিখ ও সময় (BST)</th>
+                            <th>নাম</th>
+                            <th>জন্মতারিখ</th>
+                            <th>বিক্রি (টাকা)</th>
+                            <th>পয়েন্ট</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #64748b;">কোনো লেনদেন রেকর্ড করা হয়নি।</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn" style="background:#475569; margin-top:15px;" onclick="window.print()">হিসাব প্রিন্ট করুন</button>
+            <button class="btn btn-reset" onclick="resetLedger()">সব হিসাব মুছে ফেলুন</button>
+        </div>
+
+    </div>
+
+    <script>
+        let salesData = JSON.parse(localStorage.getItem('sakuraSalesData')) || [];
+
+        window.onload = function() {
+            checkTodayBirthdays();
+            if (salesData.length > 0) {
+                updateTallyDashboard();
+            } else {
+                processTransactionSilently();
+            }
+        };
+
+        function getBangladeshDateTime() {
+            const now = new Date();
+            return now.toLocaleString('en-GB', { timeZone: 'Asia/Dhaka', hour12: true });
+        }
+
+        function checkTodayBirthdays() {
+            const now = new Date();
+            const todayMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const todayDay = String(now.getDate()).padStart(2, '0');
+            const todayMD = `${todayMonth}-${todayDay}`;
+
+            let birthdayNames = [];
+            salesData.forEach(item => {
+                if (item.birthday) {
+                    const parts = item.birthday.split('-');
+                    if (parts.length === 3) {
+                        const bMD = `${parts[1]}-${parts[2]}`;
+                        if (bMD === todayMD && !birthdayNames.includes(item.name)) {
+                            birthdayNames.push(item.name);
+                        }
+                    }
+                }
+            });
+
+            if (birthdayNames.length > 0) {
+                const modal = document.getElementById('birthdayPopupModal');
+                const textElem = document.getElementById('birthdayPopupText');
+                textElem.innerHTML = `আজকে বিশেষ দিন! নিচে উল্লেখিত মেম্বারদের জন্মদিন:<br><br><strong style="font-size:20px; color:#fef08a;">🎂 ${birthdayNames.join(', ')} 🎂</strong><br><br>তাদেরকে ডাবল স্ট্যাম্প বা বিশেষ উপহার দিন!`;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeBirthdayModal() {
+            document.getElementById('birthdayPopupModal').style.display = 'none';
+        }
+
+        function processTransaction() {
+            const nameInput = document.getElementById('custName');
+            const bdayInput = document.getElementById('custBirthday');
+            const amountInput = document.getElementById('purchaseAmount');
+
+            const name = nameInput.value.trim().toUpperCase();
+            const birthday = bdayInput.value;
+            const amount = parseFloat(amountInput.value);
+
+            if (!name || isNaN(amount) || amount <= 0) {
+                alert("দয়া করে সঠিক কাস্টমার নাম এবং টাকার পরিমাণ লিখুন।");
+                return;
+            }
+
+            const pointsEarned = (amount / 250) * 0.5;
+            const timeString = getBangladeshDateTime();
+
+            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট দেখতে চাই।`);
+            const whatsappUrl = `https://wa.me/8801341583215?text=${encodedMsg}`;
+
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: whatsappUrl,
+                width: 42,
+                height: 42,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+
+            salesData.push({
+                time: timeString,
+                name: name,
+                birthday: birthday,
+                sales: amount,
+                points: pointsEarned
+            });
+
+            localStorage.setItem('sakuraSalesData', JSON.stringify(salesData));
+            updateTallyDashboard();
+
+            const now = new Date();
+            const todayMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const todayDay = String(now.getDate()).padStart(2, '0');
+            const todayMD = `${todayMonth}-${todayDay}`;
+
+            if (birthday) {
+                const parts = birthday.split('-');
+                if (parts.length === 3 && `${parts[1]}-${parts[2]}` === todayMD) {
+                    const modal = document.getElementById('birthdayPopupModal');
+                    const textElem = document.getElementById('birthdayPopupText');
+                    textElem.innerHTML = `🎉 দারুণ ব্যাপার! আজকে <strong>${name}</strong>-এর জন্মদিন! 🎂<br><br>তাকে জন্মদিনের শুভেচ্ছা জানান এবং বিশেষ উপহার/ডাবল পয়েন্ট দিন!`;
+                    modal.style.display = 'flex';
+                } else {
+                    alert("✅ লেনদেন সফলভাবে রেকর্ড করা হয়েছে!");
+                }
+            } else {
+                alert("✅ লেনদেন সফলভাবে রেকর্ড করা হয়েছে!");
+            }
+        }
+
+        function processTransactionSilently() {
+            const name = document.getElementById('custName').value.trim().toUpperCase();
+            
+            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট দেখতে চাই।`);
+            const whatsappUrl = `https://wa.me/8801341583215?text=${encodedMsg}`;
+
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: whatsappUrl,
+                width: 42,
+                height: 42,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
+        function updateTallyDashboard() {
+            filterCustomerData();
+        }
+
+        function filterCustomerData() {
+            const searchQuery = document.getElementById('searchName').value.trim().toUpperCase();
+            const tbody = document.getElementById('salesTableBody');
+            const summaryBox = document.getElementById('searchSummaryBox');
+            tbody.innerHTML = '';
+
+            let totalStoreSales = 0;
+
+            salesData.forEach(item => {
+                totalStoreSales += item.sales;
+            });
+
+            document.getElementById('totalSales').innerText = `৳ ${totalStoreSales.toLocaleString()}`;
+
+            const filteredData = searchQuery ? salesData.filter(item => item.name.includes(searchQuery)) : salesData;
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #64748b;">কোনো কাস্টমার পাওয়া যায়নি।</td></tr>`;
+                summaryBox.style.display = 'none';
+                return;
+            }
+
+            if (searchQuery) {
+                let searchedSales = 0;
+                let searchedPoints = 0;
+
+                filteredData.forEach(item => {
+                    searchedSales += item.sales;
+                    searchedPoints += item.points;
+                });
+
+                summaryBox.style.display = 'block';
+                document.getElementById('summaryNameTitle').innerText = `কাস্টমার বিবরণ: ${searchQuery}`;
+                document.getElementById('summaryDetailsText').innerHTML = `
+                    মোট কেনাকাটা: <strong>৳ ${searchedSales.toLocaleString()}</strong><br>
+                    মোট জমা পয়েন্ট: <strong style="color:#f59e0b;">${searchedPoints.toFixed(1)} পয়েন্ট</strong><br>
+                    মোট ভিজিট/লেনদেন: <strong>${filteredData.length} বার</strong>
+                `;
+            } else {
+                summaryBox.style.display = 'none';
+            }
+
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.time}</td>
+                    <td style="font-weight:600;">${item.name}</td>
+                    <td>${item.birthday || 'দেওয়া হয়নি'}</td>
+                    <td>৳ ${item.sales.toLocaleString()}</td>
+                    <td style="color:#f59e0b; font-weight:bold;">+${item.points.toFixed(1)} পই.</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function downloadBlankTemplate() {
+            const cardElement = document.getElementById('pointsCard');
+            html2canvas(cardElement, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'sakura_blank_stamp_card.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function resetLedger() {
+            if (confirm("আপনি কি সমস্ত হিসাব মুছে ফেলতে চান?")) {
+                localStorage.removeItem('sakuraSalesData');
+                salesData = [];
+                updateTallyDashboard();
+            }
+        }
+    </script>
+</body>
+</html>
