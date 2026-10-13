@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>সাকুরা মার্কেট - কাস্টমার ও পয়েন্ট ম্যানেজমেন্ট সিস্টেম</title>
-    <!-- FontAwesome & html2canvas -->
+    <!-- FontAwesome, Google Fonts & html2canvas -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -320,16 +321,141 @@
         }
         .btn-delete:hover { background: #b91c1c; }
 
+        /* ===================================================
+           🌸 JAPANESE VIBES THERMAL RECEIPT STYLE
+        ==================================================== */
         #receiptCaptureArea {
             position: absolute;
             left: -9999px;
-            width: 320px;
-            background: #ffffff;
+            width: 360px;
+            background: #faf8f5;
+            color: #1a1a1a;
+            padding: 30px 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            font-family: 'Space Mono', 'Noto Sans JP', monospace;
+            position: relative;
+            border-top: 6px solid #e11d48;
+        }
+
+        .jp-receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #334155;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .jp-stamp {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 2px solid #e11d48;
+            color: #e11d48;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 900;
+            transform: rotate(-15deg);
+            opacity: 0.85;
+        }
+
+        .jp-brand-title {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
             color: #0f172a;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .jp-kanji-sub {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: #e11d48;
+            margin-top: 2px;
+            font-weight: 700;
+        }
+
+        .jp-loc-text {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .jp-details-body {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #1e293b;
+        }
+
+        .jp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .jp-label {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .jp-val {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .jp-divider {
+            border-bottom: 1px dashed #cbd5e1;
+            margin: 10px 0;
+        }
+
+        .jp-total-box {
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+
+        .jp-total-box .jp-label {
+            color: #94a3b8;
+        }
+
+        .jp-total-box .jp-val {
+            color: #facc15;
+            font-size: 16px;
+        }
+
+        .jp-footer {
+            text-align: center;
+            margin-top: 15px;
+            border-top: 2px dashed #334155;
+            padding-top: 15px;
+        }
+
+        .jp-barcode {
+            height: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                #1e293b,
+                #1e293b 2px,
+                transparent 2px,
+                transparent 4px,
+                #1e293b 4px,
+                #1e293b 7px,
+                transparent 7px,
+                transparent 9px
+            );
+            margin: 10px auto 6px auto;
+            width: 80%;
+        }
+
+        .jp-thankyou {
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 1px;
         }
 
         .text-green { color: var(--green-text); }
@@ -475,13 +601,25 @@
         </div>
     </div>
 
-    <!-- Hidden Receipt Template for Canvas capturing -->
+    <!-- 🌸 JAPANESE VIBES THERMAL RECEIPT TEMPLATE FOR PNG GENERATION -->
     <div id="receiptCaptureArea">
-        <div style="text-align: center; font-weight: 900; font-size: 18px; color: #881337;">সাকুরা মার্কেট</div>
-        <div style="text-align: center; font-size: 10px; color: #64748b; margin-bottom: 10px;">সিলেট, বাংলাদেশ</div>
-        <div id="receiptDynamicContent" style="font-size: 12.5px; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding: 10px 0; margin-bottom: 10px;">
+        <div class="jp-stamp">済</div>
+        <div class="jp-receipt-header">
+            <div class="jp-brand-title">SAKURA MARKET</div>
+            <div class="jp-kanji-sub">サクラマーケット • 咲</div>
+            <div class="jp-loc-text">Sylhet, Bangladesh • Official Receipt</div>
         </div>
-        <div style="text-align: center; font-size: 9px; color: #94a3b8;">ধন্যবাদ, আবার আসবেন! 🌸</div>
+
+        <div class="jp-details-body" id="receiptDynamicContent">
+            <!-- Dynamic Data inserted via JavaScript -->
+        </div>
+
+        <div class="jp-footer">
+            <div class="jp-barcode"></div>
+            <div style="font-size: 10px; font-weight: 700; letter-spacing: 2px;">#SAKURA-POS-SYLHET</div>
+            <div class="jp-thankyou">ご来店ありがとうございます！</div>
+            <div style="font-size: 10px; color: #e11d48; margin-top: 2px; font-weight: bold;">THANK YOU FOR SHOPPING! 🌸</div>
+        </div>
     </div>
 
     <script>
@@ -502,7 +640,7 @@
             }, 1000);
         }
 
-        // বাংলাদেশি নম্বরে স্বয়ংক্রিয়ভাবে 880 যোগ করার সংকেত
+        // Auto format BD Phone Number
         function cleanPhoneNumber(phone) {
             let num = phone.replace(/[^0-9]/g, '');
             if (num.startsWith('880')) {
@@ -593,46 +731,73 @@
             }
         }
 
-        // wa.me টেকনোলজি দিয়ে কন্টাক্ট সেভ না করে সরাসরি মেসেজ পাঠানোর ফাংশন
+        // Japanese Aesthetic Receipt Generator & wa.me Trigger
         function sendWhatsAppReceipt(id) {
             const tx = transactions.find(t => t.id === id);
             if (!tx) return;
 
             let typeText = tx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (tx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
 
+            // Insert Japanese Vibes Layout Content
             document.getElementById('receiptDynamicContent').innerHTML = `
-                <div style="margin-bottom:4px;"><b>সময়:</b> ${tx.timestamp}</div>
-                <div style="margin-bottom:4px;"><b>নাম:</b> ${tx.name}</div>
-                <div style="margin-bottom:4px;"><b>ফোন:</b> ${tx.phone}</div>
-                <div style="margin-bottom:4px;"><b>লেনদেন:</b> ${typeText}</div>
-                <div style="margin-bottom:4px;"><b>পরিমাণ:</b> ৳ ${parseFloat(tx.amount || 0).toLocaleString()}</div>
-                <div><b>পয়েন্ট পরিবর্তন:</b> <span style="color:${tx.points >= 0 ? 'green':'red'}">${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}</span></div>
+                <div class="jp-row">
+                    <span class="jp-label">TIME / 日時:</span>
+                    <span class="jp-val">${tx.timestamp}</span>
+                </div>
+                <div class="jp-row">
+                    <span class="jp-label">CUSTOMER / 氏名:</span>
+                    <span class="jp-val">${tx.name}</span>
+                </div>
+                <div class="jp-row">
+                    <span class="jp-label">PHONE / 電話:</span>
+                    <span class="jp-val">${tx.phone}</span>
+                </div>
+                <div class="jp-divider"></div>
+                <div class="jp-row">
+                    <span class="jp-label">TYPE / 種別:</span>
+                    <span class="jp-val" style="color:#e11d48;">${typeText}</span>
+                </div>
+                
+                <div class="jp-total-box">
+                    <div class="jp-row">
+                        <span class="jp-label">AMOUNT / 金額:</span>
+                        <span class="jp-val">৳ ${parseFloat(tx.amount || 0).toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <div class="jp-row">
+                    <span class="jp-label">POINTS / ポイント:</span>
+                    <span class="jp-val" style="color:${tx.points >= 0 ? '#16a34a':'#dc2626'}; font-size: 15px;">
+                        ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}
+                    </span>
+                </div>
             `;
 
             const captureArea = document.getElementById('receiptCaptureArea');
-            html2canvas(captureArea, { scale: 3 }).then(canvas => {
+            
+            // High Density Image Rendering
+            html2canvas(captureArea, { scale: 3, backgroundColor: '#faf8f5' }).then(canvas => {
                 canvas.toBlob(blob => {
                     const phoneClean = cleanPhoneNumber(tx.phone);
                     
-                    // ফরম্যাট করা রসিদের টেক্সট মেসেজ
                     const textMsg = encodeURIComponent(
-                        `🌸 *সাকুরা মার্কেট - রসিদ* 🌸\n\n` +
-                        `প্রিয় *${tx.name}*,\n` +
-                        `আমাদের দোকানে কেনাকাটা করার জন্য ধন্যবাদ!\n\n` +
-                        `📅 সময়: ${tx.timestamp}\n` +
-                        `🛒 লেনদেন: ${typeText}\n` +
-                        `💰 পরিমাণ: ৳${tx.amount}\n` +
-                        `⭐ পয়েন্ট অর্জন/আপডেট: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
-                        `সাকুরা মার্কেট, সিলেট।`
+                        `🌸 *SAKURA MARKET - JAPANESE RECEIPT* 🌸\n\n` +
+                        `Dear *${tx.name}*,\n` +
+                        `Thank you for shopping with us!\n\n` +
+                        `📅 Date: ${tx.timestamp}\n` +
+                        `🛒 Type: ${typeText}\n` +
+                        `💰 Amount: ৳${tx.amount}\n` +
+                        `⭐ Points: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
+                        `Sakura Market, Sylhet.`
                     );
 
-                    // ১. PNG পিকচার রসিদ ডাউনলোড হবে
+                    // Download PNG Receipt
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = `Receipt_${tx.name}.png`;
+                    link.download = `Sakura_Receipt_${tx.name}.png`;
                     link.click();
 
-                    // ২. কন্টাক্ট সেভ ছাড়াই সরাসরি wa.me লিংকের মাধ্যমে নির্দিষ্ট নম্বরে চ্যাট পপ-আপ হবে
+                    // Open direct wa.me link
                     window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
