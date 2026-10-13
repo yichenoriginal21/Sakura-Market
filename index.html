@@ -485,8 +485,8 @@
     </div>
 
     <script>
-        // Updated Google Apps Script Web App URL
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoVta0OdxECjSdu_iubtT9PmXvg7H7Zr5fsU4IIafNvQ5B0zoZSr_Gmh6ntz5L8gZIUw/exec"; 
+        // Updated with your latest Web App URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdemw1B2fjfWhUtf_n7Wv8ICud5NiY0DHigZ1L5oMGnzj0G-yX3zyA0rJun_8WptvfeA/exec"; 
 
         let transactions = JSON.parse(localStorage.getItem('sakura_transactions')) || [];
 
@@ -505,8 +505,8 @@
 
         function calculatePoints(amount, type) {
             let val = parseFloat(amount) || 0;
-            if (type === 'sale') return (val / 300); // ৳300 = 1 Point
-            else if (type === 'redeem') return -Math.abs(val); // 1 Point = ৳1 Discount
+            if (type === 'sale') return (val / 300);
+            else if (type === 'redeem') return -Math.abs(val);
             else if (type === 'bonus') return Math.abs(val);
             return 0;
         }
@@ -516,7 +516,7 @@
 
             const name = document.getElementById('custName').value.trim();
             const phone = document.getElementById('custPhone').value.trim();
-            const dob = document.getElementById('custDob').value;
+            const dob = document.getElementById('custDob').value || "N/A";
             const amount = parseFloat(document.getElementById('txAmount').value) || 0;
             const type = document.getElementById('txType').value;
             const computedPoints = calculatePoints(amount, type);
@@ -535,34 +535,45 @@
             transactions.unshift(newTx);
             localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
 
-            // Google Sheets API
-            syncToGoogleSheets(newTx);
+            syncToGoogleSheets(newTx, 'add');
 
             document.getElementById('txAmount').value = '';
             document.getElementById('custPhone').value = '';
+            document.getElementById('custName').value = '';
+            document.getElementById('custDob').value = '';
             
             renderHistoryTable();
             updateStoreMetrics();
             searchCustomerSummation();
 
-            alert('✅ লেনদেন সফলভাবে সংরক্ষণ করা হয়েছে এবং আপনার গুগোল শিটে পাঠানো হয়েছে!');
+            alert('✅ সফলভাবে সংরক্ষিত এবং গুগোল শিটে পাঠানো হয়েছে!');
         }
 
-        function syncToGoogleSheets(data) {
+        function syncToGoogleSheets(data, actionType = 'add') {
+            const payload = {
+                ...data,
+                action: actionType
+            };
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).catch(err => {
-                console.error('Google Sheets Sync Error:', err);
-            });
+                body: JSON.stringify(payload)
+            }).catch(err => console.error('Google Sheets Sync Error:', err));
         }
 
         function deleteTransaction(id) {
-            if (confirm('⚠️ আপনি কি এই লেনদেনটি মুছে ফেলতে চান?')) {
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে স্থায়ীভাবে মুছে ফেলতে চান?')) {
+                const txToDelete = transactions.find(t => t.id === id);
+                
+                if (txToDelete) {
+                    syncToGoogleSheets(txToDelete, 'delete');
+                }
+
                 transactions = transactions.filter(t => t.id !== id);
                 localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
+                
                 renderHistoryTable();
                 updateStoreMetrics();
                 searchCustomerSummation();
