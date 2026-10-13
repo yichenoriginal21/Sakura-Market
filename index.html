@@ -3,713 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咲 সাকুরা মার্কেট - গুগল শিট লাইভ সিঙ্ক</title>
-    <!-- HTML2Canvas & QR Code Libraries -->
+    <title>সাকুরা মার্কেট - POS & ওয়াটসঅ্যাপ রসিদ সিস্টেম</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas for Receipt Image Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <style>
-        :root {
-            --bg-color: #0b0f19;
-            --panel-bg: #151c2c;
-            --text-color: #f8fafc;
-            --border-color: #28344e;
-            --accent-color: #f43f5e;
-        }
-
-        .light-mode {
-            --bg-color: #f1f5f9;
-            --panel-bg: #ffffff;
-            --text-color: #0f172a;
-            --border-color: #cbd5e1;
-            --accent-color: #e11d48;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'SolaimanLipi', 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
+            font-family: 'Hind Siliguri', 'Segoe UI', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            position: relative;
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-
-        header h1 {
-            color: var(--accent-color);
-            font-size: 26px;
-            letter-spacing: 1px;
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
         }
-
-        header p {
-            color: #94a3b8;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .live-status {
-            display: inline-block;
-            background: #10b981;
-            color: white;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-left: 8px;
-        }
-
-        .theme-toggle-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: var(--border-color);
-            color: var(--text-color);
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .dashboard-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            max-width: 1250px;
-            margin: 0 auto;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            flex: 1;
-            min-width: 380px;
-        }
-
-        .panel h2 {
-            font-size: 15px;
-            margin-bottom: 15px;
-            color: var(--text-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 14px;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .search-box input {
-            background: var(--bg-color);
-            border: 1px solid var(--accent-color);
-            color: var(--text-color);
-            font-weight: bold;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            font-size: 14px;
-            margin-top: 5px;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover { opacity: 0.9; }
-
-        .btn-download {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            margin-top: 10px;
-        }
-
-        .btn-excel {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            margin-top: 8px;
-        }
-
-        .btn-reset {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            margin-top: 8px;
-        }
-
-        .btn-delete-row {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
             border-radius: 4px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
         }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            display: inline-block;
-            margin-right: 4px;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e11d48;
         }
-
-        #birthdayPopupModal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #881337 0%, #4c0519 100%);
-            border: 3px solid #f59e0b;
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            color: white;
-        }
-
-        .modal-content h3 { color: #fef08a; font-size: 22px; margin-bottom: 10px; }
-        .modal-content p { font-size: 15px; margin-bottom: 20px; line-height: 1.5; }
-
-        .points-card {
-            width: 100%;
-            max-width: 420px;
-            height: 260px;
-            background: linear-gradient(135deg, #881337 0%, #4c0519 60%, #1c0209 100%);
-            border-radius: 16px;
-            color: #ffffff;
-            padding: 18px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin: 15px auto 0 auto;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
-            border: 2px solid #f59e0b;
-        }
-
-        .points-card::before {
-            content: "咲";
-            position: absolute;
-            top: -25px; right: -10px;
-            font-size: 150px;
-            color: rgba(255, 255, 255, 0.04);
-            font-weight: bold;
-            pointer-events: none;
-        }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; z-index: 1; }
-        .store-brand { display: flex; align-items: center; gap: 10px; }
-        .store-logo {
-            width: 32px; height: 32px;
-            background-color: #f59e0b; color: #881337;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 17px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        }
-        .store-name { font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .japanese-sub { font-size: 9px; color: #fef08a; display: block; }
-        .card-type { font-size: 9px; background-color: #f59e0b; color: #4c0519; padding: 4px 8px; border-radius: 12px; font-weight: 800; }
-
-        .card-middle { z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
-        .member-info { display: flex; flex-direction: column; width: 65%; }
-        .member-label { font-size: 9px; color: #fca5a5; font-weight: bold; }
-        .member-name-blank-line { border-bottom: 2px solid #fca5a5; height: 24px; margin-bottom: 4px; width: 100%; }
-        .card-number { font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #cbd5e1; }
-
-        .points-box { text-align: right; }
-        .points-value { font-size: 12px; font-weight: 800; color: #f59e0b; border: 1px solid #f59e0b; padding: 3px 6px; border-radius: 6px; background: rgba(0,0,0,0.3); }
-        .points-rule-text { font-size: 8px; color: #fca5a5; margin-top: 2px; }
-
-        .stamp-section { z-index: 1; background: rgba(0, 0, 0, 0.35); border: 1px dashed #f59e0b; border-radius: 8px; padding: 6px 8px; }
-        .stamp-title { font-size: 9px; color: #fef08a; text-align: center; margin-bottom: 4px; font-weight: 700; }
-        .stamp-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
-        .stamp-circle {
-            width: 100%; height: 25px; border: 1px solid #f59e0b; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 8px; font-weight: bold; color: #fef08a; background: rgba(255, 255, 255, 0.05);
-            position: relative;
-        }
-        .stamp-circle::after { content: "印"; font-size: 6px; color: rgba(245, 158, 11, 0.3); position: absolute; bottom: 1px; }
-
-        .card-footer { z-index: 1; background-color: #ffffff; border-radius: 8px; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; }
-        .qr-section { display: flex; align-items: center; gap: 8px; }
-        #qrcode { width: 42px; height: 42px; background: #fff; padding: 2px; border-radius: 4px; }
-        #qrcode img { width: 100%; height: 100%; }
-        .qr-text-info { display: flex; flex-direction: column; }
-        .qr-label { font-size: 8px; color: #0b0f19; font-weight: 800; }
-        .qr-phone-sub { font-size: 7.5px; color: #16a34a; font-weight: bold; font-family: monospace; }
-        .rewards-info { text-align: right; }
-        .points-rate { font-size: 9.5px; font-weight: 800; color: #881337; }
-        .issued-date { font-size: 7.5px; color: #64748b; }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px; }
-        .stat-card { background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
-        .stat-card h4 { font-size: 11px; color: #94a3b8; }
-        .stat-card p { font-size: 18px; font-weight: bold; color: var(--text-color); margin-top: 3px; }
-
-        .table-container { max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
-        th, td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
-        th { background-color: var(--bg-color); color: #94a3b8; position: sticky; top: 0; }
-        td { color: var(--text-color); }
-
-        .customer-summary-card { background: var(--bg-color); border: 1px solid #f59e0b; padding: 12px; border-radius: 8px; margin-bottom: 12px; display: none; }
-        .summary-title { font-size: 12px; font-weight: bold; color: #f59e0b; margin-bottom: 6px; }
-        .summary-details { font-size: 11px; color: var(--text-color); line-height: 1.5; }
-        .vip-badge { background: #f59e0b; color: #0b0f19; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-left: 5px; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-6 min-h-screen">
 
-    <div id="birthdayPopupModal">
-        <div class="modal-content">
-            <h3>🎉 বিশেষ জন্মদিনের শুভেচ্ছা! 🎂</h3>
-            <p id="birthdayPopupText">আজকে জন্মদিনের কাস্টমার রয়েছে!</p>
-            <button class="btn" onclick="closeBirthdayModal()">ধন্যবাদ (ঠিক আছে)</button>
+    <!-- App Header -->
+    <header class="bg-gradient-to-r from-[#2d0c15] to-[#1e293b] border border-[#e11d48]/40 rounded-2xl p-4 md:p-5 mb-6 shadow-lg shadow-[#e11d48]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-[#e11d48] text-white rounded-xl flex items-center justify-center text-2xl font-black shadow-md">
+                咲
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-wide">সাকুরা মার্কেট <span class="text-xs px-2 py-0.5 rounded bg-[#e11d48]/20 text-[#e11d48] border border-[#e11d48]/40">POS & WhatsApp</span></h1>
+                <p class="text-xs text-[#facc15] font-medium">গ্রাহক, পয়েন্ট ও অটোমেটেড ওয়াটসঅ্যাপ রসিদ সিস্টেম</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-800/80 border border-slate-700 px-4 py-1.5 rounded-full text-xs text-slate-300 flex items-center gap-2" id="liveClock">
+                <i class="fa-regular fa-clock text-[#e11d48]"></i> --:--:-- PM
+            </div>
+            <button onclick="resetAllData()" class="bg-rose-950/40 hover:bg-[#e11d48] text-rose-300 hover:text-white border border-[#e11d48]/50 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> ডেটা রিসেট
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Panel: Form Section (5 Cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-[#1e293b] border border-slate-700/80 rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping text-[#e11d48]"></i> ১. নতুন লেনদেন সেভ করুন
+                    </h2>
+                    <span class="text-xs bg-[#facc15]/10 text-[#facc15] border border-[#facc15]/30 px-2.5 py-0.5 rounded-full font-semibold">
+                        ৳৩০০ = ১ পয়েন্ট (৳১)
+                    </span>
+                </div>
+
+                <form id="transactionForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">গ্রাহকের নাম (Customer Name) <span class="text-[#e11d48]">*</span></label>
+                        <input type="text" id="custName" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#e11d48] transition" placeholder="যেমন: রহিম আহমেদ" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">ওয়াটসঅ্যাপ নাম্বার (WhatsApp Number)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-xs text-slate-400 font-bold">+880</span>
+                            <input type="tel" id="custPhone" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg pl-14 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#e11d48] transition" placeholder="1712345678">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">জন্মতারিখ (Optional)</label>
+                            <input type="date" id="custDob" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#e11d48] transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">পরিমাণ (টাকা ৳ / পয়েন্ট) <span class="text-[#e11d48]">*</span></label>
+                            <input type="number" step="0.01" id="txAmount" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#e11d48] transition" placeholder="যেমন: ৩০০" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">লেনদেনের ধরন (Transaction Type)</label>
+                        <select id="txType" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#e11d48] transition">
+                            <option value="sale">সাধারণ কেনাকাটা (পয়েন্ট জমা)</option>
+                            <option value="redeem">পয়েন্ট রিডিম / ক্যাশব্যাক (পয়েন্ট কর্তন)</option>
+                            <option value="bonus">বিশেষ বোনাস পয়েন্ট</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-[#e11d48] hover:bg-[#be123c] text-white font-bold py-3 rounded-lg text-sm shadow-lg shadow-[#e11d48]/25 transition active:scale-[0.98] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> লেনদেন সেভ ও পয়েন্ট হিসাব করুন
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Panel: Dashboard, Search & Table (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Metrics -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-[#1e293b] border border-slate-700/80 rounded-xl p-4 text-center">
+                    <div class="text-xs text-slate-400 font-medium">দোকানের মোট কেনাকাটা</div>
+                    <div class="text-2xl font-black text-emerald-400 mt-1" id="totalStoreSales">৳ 0.00</div>
+                </div>
+                <div class="bg-[#1e293b] border border-slate-700/80 rounded-xl p-4 text-center">
+                    <div class="text-xs text-slate-400 font-medium">অর্জিত মোট পয়েন্ট</div>
+                    <div class="text-2xl font-black text-[#facc15] mt-1" id="totalStorePoints">0.00 পয়েন্ট</div>
+                </div>
+            </div>
+
+            <!-- Customer Search & Summation -->
+            <div class="bg-[#1e293b] border border-slate-700/80 rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center gap-2 border-b border-slate-700 pb-3 mb-4">
+                    <i class="fa-solid fa-magnifying-glass text-[#e11d48]"></i>
+                    <h2 class="text-base font-bold text-white">২. কাস্টমার সার্চ (মোট কেনাকাটা ও জমানো পয়েন্ট)</h2>
+                </div>
+
+                <input type="text" id="searchInput" onkeyup="searchCustomerSummation()" class="w-full bg-[#0f172a] border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#e11d48] transition" placeholder="কাস্টমারের নাম টাইপ করুন (যেমন: রহিম)...">
+
+                <div id="searchResultsArea" class="hidden mt-4">
+                    <div class="bg-[#0f172a] border border-dashed border-[#e11d48] rounded-xl p-4 space-y-2 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">👤 কাস্টমার নাম:</span>
+                            <strong id="srName" class="text-[#facc15]">--</strong>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">🛒 মোট কেনাকাটা:</span>
+                            <strong id="srSpend" class="text-emerald-400">৳ 0.00</strong>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">⭐ জমানো ব্যালেন্স পয়েন্ট:</span>
+                            <strong id="srPoints" class="text-[#facc15]">0.00 পয়েন্ট</strong>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">🔢 মোট লেনদেন সম্পন্ন:</span>
+                            <span id="srCount" class="text-slate-300">0 টি</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="bg-[#1e293b] border border-slate-700/80 rounded-2xl p-5 shadow-xl">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-[#e11d48]"></i> লেনদেনের ইতিহাস ও রসিদ
+                    </h2>
+                    <span id="txCountBadge" class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded-full">0টি লেনদেন</span>
+                </div>
+
+                <div class="overflow-x-auto max-h-80 overflow-y-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-[#0f172a] text-slate-400 sticky top-0 border-b border-slate-700">
+                            <tr>
+                                <th class="p-2.5">সময়</th>
+                                <th class="p-2.5">নাম</th>
+                                <th class="p-2.5">ধরন</th>
+                                <th class="p-2.5">টাকা (৳)</th>
+                                <th class="p-2.5">পয়েন্ট</th>
+                                <th class="p-2.5 text-center">রসিদ / অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-800">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-slate-500">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <header>
-        <button class="theme-toggle-btn" onclick="toggleTheme()">☀️/🌙 থিম</button>
-        <h1>咲 সাকুরা মার্কেট <span class="live-status">GOOGLE SHEETS LIVE</span></h1>
-        <p>জাপানিজ স্টাইল স্ট্যাম্প কার্ড ও গুগল শিট সিঙ্ক সিস্টেম</p>
-    </header>
+    <!-- Receipt Interactive Modal -->
+    <div id="receiptModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 shadow-2xl relative">
+            <button onclick="closeReceiptModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-center font-bold text-lg text-white mb-1"><i class="fa-brands fa-whatsapp text-emerald-400 mr-1"></i> ওয়াটসঅ্যাপ রসিদ</h3>
+            <p class="text-center text-xs text-slate-400 mb-4">PNG ইমেজ হিসেবে ওয়াটসঅ্যাপে কাস্টমারকে পাঠান</p>
 
-    <div class="dashboard-container">
-        
-        <div class="panel">
-            <h2>১. পয়েন্ট, স্ট্যাম্প ও রিওয়ার্ড রেজিস্টার</h2>
-            <div class="form-group">
-                <label>গ্রাহকের নাম (Customer Name):</label>
-                <input type="text" id="custName" value="রহিম আহমেদ">
-            </div>
-            <div class="form-group">
-                <label>জন্মতারিখ (Birthday Date):</label>
-                <input type="date" id="custBirthday" value="1995-10-13">
-            </div>
-            <div class="form-group">
-                <label>পরিমাণ (টাকা বা পয়েন্ট রিডেম্পশন):</label>
-                <input type="number" id="purchaseAmount" value="250">
-            </div>
-            <div class="form-group">
-                <label>লেনদেনের ধরন (Transaction Type):</label>
-                <select id="transType">
-                    <option value="sale">সাধারণ কেনাকাটা (পয়েন্ট জমা)</option>
-                    <option value="redeem">পয়েন্ট রিডেম্পশন / খরচ (Points Spend)</option>
-                </select>
-            </div>
-            <button class="btn" id="saveBtn" onclick="processTransaction()">গুগল শিটে সেভ করুন</button>
-
-            <div class="points-card" id="pointsCard">
-                <div class="card-header">
-                    <div class="store-brand">
-                        <div class="store-logo">咲</div>
-                        <div>
-                            <div class="store-name">সাকুরা মার্কেট</div>
-                            <span class="japanese-sub">スタンプカード (স্ট্যাম্প কার্ড)</span>
-                        </div>
-                    </div>
-                    <div class="card-type">মেম্বার কার্ড</div>
-                </div>
-
-                <div class="card-middle">
-                    <div class="member-info">
-                        <div class="member-label">নাম: ✍️ (এখানে হাতে লিখুন)</div>
-                        <div class="member-name-blank-line"></div>
-                        <div class="card-number">MEMBER STAMP CARD</div>
-                    </div>
-                    <div class="points-box">
-                        <div class="points-value">২৫০ টাকা = ০.৫ পয়েন্ট</div>
-                        <div class="points-rule-text">১০ স্ট্যাম্প = ৫% ফ্ল্যাট ছাড়</div>
-                    </div>
-                </div>
-
-                <div class="stamp-section">
-                    <div class="stamp-title">বিশেষ ডিসকাউন্টের জন্য ১০টি স্ট্যাম্প সংগ্রহ করুন</div>
-                    <div class="stamp-grid">
-                        <div class="stamp-circle">১</div><div class="stamp-circle">২</div>
-                        <div class="stamp-circle">৩</div><div class="stamp-circle">৪</div>
-                        <div class="stamp-circle">৫</div><div class="stamp-circle">৬</div>
-                        <div class="stamp-circle">৭</div><div class="stamp-circle">৮</div>
-                        <div class="stamp-circle">৯</div><div class="stamp-circle">১০</div>
-                    </div>
-                </div>
-
-                <div class="card-footer">
-                    <div class="qr-section">
-                        <div id="qrcode"></div>
-                        <div class="qr-text-info">
-                            <span class="qr-label">হোয়াটসঅ্যাপ স্ক্যান</span>
-                            <span class="qr-phone-sub">+8801341583215</span>
-                        </div>
-                    </div>
-                    <div class="rewards-info">
-                        <div class="points-rate">সাকুরা মেম্বার</div>
-                        <div class="issued-date">২০২০</div>
-                    </div>
-                </div>
+            <!-- Preview Container -->
+            <div id="modalReceiptPreview" class="bg-white rounded-xl p-4 text-slate-900 shadow-inner mb-4">
+                <!-- Preview generated dynamically -->
             </div>
 
-            <button class="btn btn-download" onclick="downloadBlankTemplate()">খালি কার্ড ডাউনলোড করুন (প্রিন্ট)</button>
+            <div class="space-y-2">
+                <button onclick="shareDirectWhatsAppPNG()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-brands fa-whatsapp text-base"></i> ওয়াটসঅ্যাপে PNG শেয়ার করুন
+                </button>
+                <button onclick="downloadReceiptPNG()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-download"></i> ইমেজ ডাউনলোড করুন (PNG)
+                </button>
+            </div>
         </div>
+    </div>
 
-        <div class="panel">
-            <h2>২. কাস্টমার ও বিক্রির ড্যাশবোর্ড (Google Sheet)</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h4>দোকানের মোট কার্যকর বিক্রি</h4>
-                    <p id="totalSales">৳ ০</p>
+    <!-- Hidden Printable Receipt Template for html2canvas -->
+    <div class="fixed top-[-9999px] left-[-9999px]">
+        <div id="hiddenReceiptCard" class="w-[340px] bg-white text-slate-900 p-6 rounded-2xl font-sans shadow-2xl border border-slate-200">
+            <div class="text-center border-b border-slate-200 pb-3 mb-3">
+                <div class="inline-flex items-center justify-center w-10 h-10 bg-[#e11d48] text-white rounded-xl text-xl font-black mb-1">咲</div>
+                <h2 class="text-xl font-black text-slate-900 tracking-wide">সাকুরা মার্কেট</h2>
+                <p class="text-[10px] text-slate-500 tracking-widest uppercase">SAKURA MARKET • POS & REWARDS</p>
+            </div>
+
+            <div class="text-xs space-y-1.5 border-b border-dashed border-slate-300 pb-3 mb-3">
+                <div class="flex justify-between"><span class="text-slate-500">সময়:</span> <span id="rcpTime" class="font-semibold"></span></div>
+                <div class="flex justify-between"><span class="text-slate-500">গ্রাহক:</span> <span id="rcpName" class="font-bold text-slate-900"></span></div>
+                <div class="flex justify-between"><span class="text-slate-500">ফোন:</span> <span id="rcpPhone" class="font-semibold text-slate-700"></span></div>
+                <div class="flex justify-between"><span class="text-slate-500">লেনদেনের ধরন:</span> <span id="rcpType" class="font-bold text-[#e11d48]"></span></div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs space-y-2 mb-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-600">কেনাকাটা (টাকা):</span>
+                    <span id="rcpAmount" class="font-black text-sm text-slate-900"></span>
+                </div>
+                <div class="flex justify-between items-center border-t border-slate-200 pt-1.5">
+                    <span class="text-slate-600">এই লেনদেনের পয়েন্ট:</span>
+                    <span id="rcpPts" class="font-black text-sm text-emerald-600"></span>
                 </div>
             </div>
 
-            <div class="form-group search-box">
-                <label>🔍 কাস্টমার নাম দিয়ে খুঁজুন (VIP টপ শপার সহ):</label>
-                <input type="text" id="searchName" placeholder="নাম লিখুন (যেমন: রহিম)..." oninput="filterCustomerData()">
+            <div class="bg-[#1e293b] text-white rounded-xl p-3 text-center space-y-0.5">
+                <p class="text-[10px] text-slate-400">গ্রাহকের মোট জমানো ব্যালেন্স পয়েন্ট</p>
+                <div id="rcpTotalPts" class="text-lg font-black text-[#facc15]">0.00 পয়েন্ট</div>
+                <p class="text-[9px] text-slate-400">(১ পয়েন্ট = ৳১ ডিসকাউন্ট ছাড়)</p>
             </div>
 
-            <div class="customer-summary-card" id="searchSummaryBox">
-                <div class="summary-title" id="summaryNameTitle">কাস্টমার সামারি</div>
-                <div class="summary-details" id="summaryDetailsText">বিস্তারিত দেখতে কাস্টমার খুঁজুন।</div>
+            <div class="text-center mt-3 pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+                ধন্যবাদ আবার আসবেন! • সাকুরা মার্কেট
             </div>
-
-            <p style="font-size:11px; color:#94a3b8;">লেনদেনের ইতিহাস ও হোয়াটসঅ্যাপ রসিদ:</p>
-            
-            <div class="table-container">
-                <table id="salesTable">
-                    <thead>
-                        <tr>
-                            <th>সময় (BST)</th>
-                            <th>নাম</th>
-                            <th>ধরন</th>
-                            <th>টাকা</th>
-                            <th>পয়েন্ট</th>
-                            <th>রসিদ/অ্যাকশন</th>
-                        </tr>
-                    </thead>
-                    <tbody id="salesTableBody">
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #64748b;">গুগল শিট থেকে ডাটা লোড হচ্ছে...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <button class="btn btn-excel" onclick="exportToCSV()">📥 এক্সেল শিটে (CSV) ব্যাকআপ ডাউনলোড করুন</button>
-            <button class="btn" style="background:#475569; margin-top:8px;" onclick="window.print()">হিসাব প্রিন্ট করুন</button>
-            <button class="btn btn-reset" onclick="resetLedgerWithPin()">সব হিসাব মুছে ফেলুন (পাসওয়ার্ড সুরক্ষিত)</button>
         </div>
-
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7CcSLNRS5S7gd_Ym9VtEmTNlnO77mABcgU69WiK4Hf53Wdj0kO1oTTgRs4npCxPJXPA/exec";
+        // Optional Google Sheets Apps Script API URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYOUR_SCRIPT_ID/exec";
 
-        let salesData = [];
+        // Application State
+        let transactions = JSON.parse(localStorage.getItem('sakura_transactions')) || [];
+        let currentActiveTx = null;
 
-        window.onload = function() {
-            fetchSheetData();
-            processTransactionSilently();
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            startClock();
+            renderHistoryTable();
+            updateStoreMetrics();
+        });
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
+        // Live Clock
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('liveClock').innerHTML = `<i class="fa-regular fa-clock text-[#e11d48]"></i> ${now.toLocaleTimeString('bn-BD')}`;
+            }, 1000);
         }
 
-        function getBangladeshDateTime() {
-            const now = new Date();
-            return now.toLocaleString('en-GB', { timeZone: 'Asia/Dhaka', hour12: true });
-        }
-
-        function fetchSheetData() {
-            fetch(SCRIPT_URL)
-                .then(res => res.json())
-                .then(data => {
-                    salesData = data;
-                    updateTallyDashboard();
-                    checkTodayBirthdays();
-                })
-                .catch(err => {
-                    document.getElementById('salesTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">ডাটা লোড করতে সমস্যা হয়েছে! Script URL ঠিক আছে কিনা দেখুন।</td></tr>`;
-                });
-        }
-
-        function checkTodayBirthdays() {
-            const now = new Date();
-            const todayMonth = String(now.getMonth() + 1).padStart(2, '0');
-            const todayDay = String(now.getDate()).padStart(2, '0');
-            const todayMD = `${todayMonth}-${todayDay}`;
-
-            let birthdayNames = [];
-            salesData.forEach(item => {
-                if (item.birthday) {
-                    const parts = item.birthday.split('-');
-                    if (parts.length === 3) {
-                        const bMD = `${parts[1]}-${parts[2]}`;
-                        if (bMD === todayMD && !birthdayNames.includes(item.name)) {
-                            birthdayNames.push(item.name);
-                        }
-                    }
-                }
-            });
-
-            if (birthdayNames.length > 0) {
-                const modal = document.getElementById('birthdayPopupModal');
-                const textElem = document.getElementById('birthdayPopupText');
-                textElem.innerHTML = `আজকে বিশেষ দিন! নিচে উল্লেখিত মেম্বারদের জন্মদিন:<br><br><strong style="font-size:20px; color:#fef08a;">🎂 ${birthdayNames.join(', ')} 🎂</strong><br><br>তাদেরকে ডাবল স্ট্যাম্প বা বিশেষ উপহার দিন!`;
-                modal.style.display = 'flex';
+        // Point Calculation Rule
+        function calculatePoints(amount, type) {
+            let val = parseFloat(amount) || 0;
+            if (type === 'sale') {
+                return (val / 300); // ৳300 = +1 point
+            } else if (type === 'redeem') {
+                return -Math.abs(val); // 1 point = ৳1 discount deduction
+            } else if (type === 'bonus') {
+                return Math.abs(val);
             }
+            return 0;
         }
 
-        function closeBirthdayModal() {
-            document.getElementById('birthdayPopupModal').style.display = 'none';
-        }
+        // Form Submit
+        function handleFormSubmit(e) {
+            e.preventDefault();
 
-        function processTransaction() {
-            const nameInput = document.getElementById('custName');
-            const bdayInput = document.getElementById('custBirthday');
-            const amountInput = document.getElementById('purchaseAmount');
-            const transType = document.getElementById('transType').value;
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const dob = document.getElementById('custDob').value;
+            const amount = parseFloat(document.getElementById('txAmount').value) || 0;
+            const type = document.getElementById('txType').value;
 
-            const name = nameInput.value.trim().toUpperCase();
-            const birthday = bdayInput.value;
-            const amount = parseFloat(amountInput.value);
+            const computedPoints = calculatePoints(amount, type);
 
-            if (!name || isNaN(amount) || amount <= 0) {
-                alert("দয়া করে সঠিক কাস্টমার নাম এবং পরিমাণ লিখুন।");
-                return;
-            }
-
-            let pointsChange = (transType === 'sale') ? (amount / 250) * 0.5 : -amount;
-            let netSale = (transType === 'sale') ? amount : 0;
-            const timeString = getBangladeshDateTime();
-
-            const newEntry = {
+            const newTx = {
                 id: Date.now(),
-                time: timeString,
+                timestamp: new Date().toLocaleString('bn-BD'),
                 name: name,
-                birthday: birthday,
-                type: transType,
-                sales: netSale,
-                points: pointsChange
+                phone: phone,
+                dob: dob,
+                amount: type === 'redeem' ? 0 : amount,
+                points: computedPoints,
+                type: type
             };
 
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "সেভ হচ্ছে...";
-            btn.disabled = true;
+            transactions.unshift(newTx);
+            localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
 
-            fetch(SCRIPT_URL + "?action=add", {
-                method: "POST",
-                body: JSON.stringify(newEntry)
-            })
-            .then(res => res.text())
-            .then(() => {
-                btn.innerText = "গুগল শিটে সেভ করুন";
-                btn.disabled = false;
-                alert("✅ গুগল শিটে সফলভাবে সেভ হয়েছে!");
-                fetchSheetData();
-            });
+            // Optional Google Sheets Sync
+            syncToGoogleSheets(newTx);
+
+            // Clear Input
+            document.getElementById('txAmount').value = '';
+
+            renderHistoryTable();
+            updateStoreMetrics();
+            searchCustomerSummation();
+
+            // Prompt WhatsApp share directly on save
+            openReceiptModal(newTx.id);
         }
 
-        function processTransactionSilently() {
-            const name = document.getElementById('custName').value.trim().toUpperCase() || "SAKURA";
-            const encodedMsg = encodeURIComponent(`আসসালামু আলাইকুম সাকুরা মার্কেট! আমি ${name}. আমার পয়েন্ট ও স্ট্যাম্প জানতে চাই।`);
-            const whatsappUrl = `https://wa.me/8801341583215?text=${encodedMsg}`;
-
-            document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: whatsappUrl,
-                width: 42, height: 42,
-                colorDark : "#000000", colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.M
-            });
+        // Sync API
+        function syncToGoogleSheets(data) {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('YOUR_SCRIPT_ID')) return;
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(err => console.error(err));
         }
 
-        function deleteTransaction(id) {
-            if (confirm("আপনি কি এই এন্ট্রিটি মুছে ফেলতে চান?")) {
-                fetch(SCRIPT_URL + "?action=delete&id=" + id, { method: "POST" })
-                .then(res => res.text())
-                .then(() => {
-                    fetchSheetData();
-                });
-            }
-        }
+        // Search & Summation
+        function searchCustomerSummation() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const resultsArea = document.getElementById('searchResultsArea');
 
-        function updateTallyDashboard() {
-            filterCustomerData();
-        }
-
-        function filterCustomerData() {
-            const searchQuery = document.getElementById('searchName').value.trim().toUpperCase();
-            const tbody = document.getElementById('salesTableBody');
-            const summaryBox = document.getElementById('searchSummaryBox');
-            tbody.innerHTML = '';
-
-            let totalStoreSales = 0;
-            let customerTotals = {};
-
-            salesData.forEach(item => {
-                if(item.type === 'sale') totalStoreSales += item.sales;
-                
-                if(!customerTotals[item.name]) customerTotals[item.name] = { sales: 0, points: 0 };
-                if(item.type === 'sale') customerTotals[item.name].sales += item.sales;
-                customerTotals[item.name].points += item.points;
-            });
-
-            let topShopper = "";
-            let maxSpent = 0;
-            for(let cust in customerTotals) {
-                if(customerTotals[cust].sales > maxSpent) {
-                    maxSpent = customerTotals[cust].sales;
-                    topShopper = cust;
-                }
-            }
-
-            document.getElementById('totalSales').innerText = `৳ ${totalStoreSales.toLocaleString()}`;
-
-            const filteredData = searchQuery ? salesData.filter(item => item.name.includes(searchQuery)) : salesData;
-
-            if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b;">কোনো কাস্টমার পাওয়া যায়নি।</td></tr>`;
-                summaryBox.style.display = 'none';
+            if (query === "") {
+                resultsArea.classList.add('hidden');
                 return;
             }
 
-            if (searchQuery) {
-                let searchedSales = customerTotals[searchQuery] ? customerTotals[searchQuery].sales : 0;
-                let searchedPoints = customerTotals[searchQuery] ? customerTotals[searchQuery].points : 0;
-                let isVip = (searchQuery === topShopper && maxSpent > 0);
+            let totalSpend = 0;
+            let totalPoints = 0;
+            let count = 0;
+            let matchedName = "";
 
-                summaryBox.style.display = 'block';
-                document.getElementById('summaryNameTitle').innerHTML = `কাস্টমার বিবরণ: ${searchQuery} ${isVip ? '<span class="vip-badge">👑 VIP Top Shopper</span>' : ''}`;
-                document.getElementById('summaryDetailsText').innerHTML = `
-                    মোট কেনাকাটা: <strong>৳ ${searchedSales.toLocaleString()}</strong><br>
-                    বর্তমান জমা পয়েন্ট: <strong style="color:#f59e0b;">${searchedPoints.toFixed(1)} পয়েন্ট</strong><br>
-                `;
+            transactions.forEach(t => {
+                if (t.name.toLowerCase().includes(query)) {
+                    matchedName = t.name;
+                    totalSpend += parseFloat(t.amount || 0);
+                    totalPoints += parseFloat(t.points || 0);
+                    count++;
+                }
+            });
+
+            resultsArea.classList.remove('hidden');
+            if (count > 0) {
+                document.getElementById('srName').innerText = matchedName;
+                document.getElementById('srSpend').innerText = `৳ ${totalSpend.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
+                document.getElementById('srPoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
+                document.getElementById('srCount').innerText = `${count} টি`;
             } else {
-                summaryBox.style.display = 'none';
+                document.getElementById('srName').innerText = "পাওয়া যায়নি";
+                document.getElementById('srSpend').innerText = "৳ 0.00";
+                document.getElementById('srPoints').innerText = "0.00 পয়েন্ট";
+                document.getElementById('srCount').innerText = "0 টি";
+            }
+        }
+
+        // Render Table
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            document.getElementById('txCountBadge').innerText = `${transactions.length}টি লেনদেন`;
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-500">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td></tr>`;
+                return;
             }
 
-            salesData.forEach((item) => {
-                if (!searchQuery || item.name.includes(searchQuery)) {
-                    const row = document.createElement('tr');
-                    let typeBadge = item.type === 'redeem' ? '<span style="color:#ef4444;">রিডেম্পশন</span>' : 'বিক্রি';
-                    let isTop = (item.name === topShopper && maxSpent > 0) ? '<span class="vip-badge">VIP</span>' : '';
+            tbody.innerHTML = transactions.map(t => {
+                let typeBadge = '';
+                if (t.type === 'sale') typeBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded text-[10px] font-bold">বিক্রি</span>`;
+                else if (t.type === 'redeem') typeBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded text-[10px] font-bold">রিডিম</span>`;
+                else typeBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded text-[10px] font-bold">বোনাস</span>`;
 
-                    const receiptText = encodeURIComponent(`🌸 *সাকুরা মার্কেট - মেমো* 🌸\nগ্রাহক: ${item.name}\nকেনাকাটা: ৳${item.sales}\nপয়েন্ট: ${item.points > 0 ? '+' : ''}${item.points.toFixed(1)} পই.`);
-                    const waLink = `https://wa.me/?text=${receiptText}`;
+                let ptsColor = t.points >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                let ptsSign = t.points >= 0 ? '+' : '';
 
-                    row.innerHTML = `
-                        <td>${item.time}</td>
-                        <td style="font-weight:600;">${item.name} ${isTop}</td>
-                        <td>${typeBadge}</td>
-                        <td>৳ ${item.sales.toLocaleString()}</td>
-                        <td style="color:#f59e0b; font-weight:bold;">${item.points >= 0 ? '+' : ''}${item.points.toFixed(1)} পই.</td>
-                        <td>
-                            <a href="${waLink}" target="_top" class="btn-whatsapp">রসিদ</a>
-                            <button class="btn-delete-row" onclick="deleteTransaction(${item.id})">মুছুন</button>
+                return `
+                    <tr class="hover:bg-slate-800/50 transition">
+                        <td class="p-2.5 text-slate-400 font-mono">${t.timestamp}</td>
+                        <td class="p-2.5 font-bold text-white">${t.name} ${t.phone ? `<br><span class="text-[10px] text-slate-400 font-normal">📱 ${t.phone}</span>` : ''}</td>
+                        <td class="p-2.5">${typeBadge}</td>
+                        <td class="p-2.5 font-semibold">৳ ${parseFloat(t.amount || 0).toLocaleString()}</td>
+                        <td class="p-2.5 ${ptsColor} font-bold">${ptsSign}${parseFloat(t.points).toFixed(2)}</td>
+                        <td class="p-2.5 text-center">
+                            <div class="flex justify-center items-center gap-2">
+                                <button onclick="openReceiptModal(${t.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded text-[11px] font-bold transition flex items-center gap-1">
+                                    <i class="fa-brands fa-whatsapp"></i> রসিদ
+                                </button>
+                                <button onclick="deleteTransaction(${t.id})" class="bg-rose-600/80 hover:bg-rose-600 text-white px-2 py-1 rounded text-[11px] transition">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
-                    `;
-                    tbody.appendChild(row);
-                }
-            });
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Time,Name,Birthday,Type,Sales,Points\n";
-            salesData.forEach(row => {
-                csvContent += `"${row.time}","${row.name}","${row.birthday || ''}","${row.type}","${row.sales}","${row.points}"\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "sakura_market_backup.csv");
-            document.body.appendChild(link);
+        // Store Metrics
+        function updateStoreMetrics() {
+            let totalSales = transactions.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            let totalPoints = transactions.reduce((sum, t) => sum + parseFloat(t.points || 0), 0);
+
+            document.getElementById('totalStoreSales').innerText = `৳ ${totalSales.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalStorePoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
+        }
+
+        // Delete Single Transaction
+        function deleteTransaction(id) {
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনের এন্ট্রি মুছে ফেলতে চান?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
+                renderHistoryTable();
+                updateStoreMetrics();
+                searchCustomerSummation();
+            }
+        }
+
+        // Modal Receipt Control
+        function openReceiptModal(id) {
+            currentActiveTx = transactions.find(t => t.id === id);
+            if (!currentActiveTx) return;
+
+            // Calculate total accumulated customer points
+            let custTotalPts = transactions
+                .filter(t => t.name.toLowerCase() === currentActiveTx.name.toLowerCase())
+                .reduce((sum, t) => sum + parseFloat(t.points || 0), 0);
+
+            // Populate hidden receipt card for image capture
+            document.getElementById('rcpTime').innerText = currentActiveTx.timestamp;
+            document.getElementById('rcpName').innerText = currentActiveTx.name;
+            document.getElementById('rcpPhone').innerText = currentActiveTx.phone ? `+880${currentActiveTx.phone}` : 'N/A';
+            document.getElementById('rcpType').innerText = currentActiveTx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (currentActiveTx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
+            document.getElementById('rcpAmount').innerText = `৳ ${parseFloat(currentActiveTx.amount || 0).toLocaleString()}`;
+            document.getElementById('rcpPts').innerText = `${currentActiveTx.points >= 0 ? '+' : ''}${parseFloat(currentActiveTx.points).toFixed(2)} পয়েন্ট`;
+            document.getElementById('rcpTotalPts').innerText = `${custTotalPts.toFixed(2)} পয়েন্ট`;
+
+            // Preview markup inside modal
+            document.getElementById('modalReceiptPreview').innerHTML = `
+                <div class="text-center font-bold text-sm text-slate-800">🌸 সাকুরা মার্কেট - রসিদ</div>
+                <div class="text-xs text-slate-500 mt-1 flex justify-between"><span>কাস্টমার: ${currentActiveTx.name}</span> <span>${currentActiveTx.timestamp}</span></div>
+                <div class="border-t border-b border-dashed border-slate-300 py-2 my-2 text-xs space-y-1">
+                    <div class="flex justify-between"><span>কেনাকাটা:</span> <strong>৳ ${parseFloat(currentActiveTx.amount || 0).toLocaleString()}</strong></div>
+                    <div class="flex justify-between"><span>অর্জিত পয়েন্ট:</span> <strong class="text-emerald-600">${currentActiveTx.points >= 0 ? '+' : ''}${parseFloat(currentActiveTx.points).toFixed(2)}</strong></div>
+                </div>
+                <div class="text-xs text-center font-bold text-amber-600">মোট জমানো পয়েন্ট: ${custTotalPts.toFixed(2)} পয়েন্ট</div>
+            `;
+
+            document.getElementById('receiptModal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.add('hidden');
+        }
+
+        // WhatsApp Direct PNG Image Sharing
+        async function shareDirectWhatsAppPNG() {
+            if (!currentActiveTx) return;
+
+            const targetElement = document.getElementById('hiddenReceiptCard');
+
+            try {
+                // Render element into canvas
+                const canvas = await html2canvas(targetElement, { scale: 3, backgroundColor: '#ffffff' });
+                
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `Receipt_${currentActiveTx.name}.png`, { type: 'image/png' });
+
+                    // Check Web Share API File support (Works on Mobile Chrome, Safari, Edge)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'সাকুরা মার্কেট রসিদ',
+                                text: `🌸 সাকুরা মার্কেট রসিদ - ${currentActiveTx.name}`
+                            });
+                        } catch (shareErr) {
+                            console.log('Share canceled or failed', shareErr);
+                        }
+                    } else {
+                        // Desktop Fallback: Download PNG & Open WhatsApp Web Chat
+                        const link = document.createElement('a');
+                        link.download = `Sakura_Receipt_${currentActiveTx.name}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+
+                        let rawPhone = currentActiveTx.phone ? currentActiveTx.phone.replace(/[^0-9]/g, '') : '';
+                        if (rawPhone.length === 10) rawPhone = '880' + rawPhone;
+
+                        let textMsg = encodeURIComponent(
+                            `🌸 *সাকুরা মার্কেট - ক্রয়ের রসিদ*\n\n` +
+                            `👤 কাস্টমার: ${currentActiveTx.name}\n` +
+                            `📅 সময়: ${currentActiveTx.timestamp}\n` +
+                            `🛒 টাকার পরিমাণ: ৳${currentActiveTx.amount}\n` +
+                            `⭐ পয়েন্ট পরিবর্তন: ${currentActiveTx.points >= 0 ? '+' : ''}${parseFloat(currentActiveTx.points).toFixed(2)}\n\n` +
+                            `ধন্যবাদ আবার আসবেন!`
+                        );
+
+                        let waUrl = rawPhone ? `https://wa.me/${rawPhone}?text=${textMsg}` : `https://wa.me/?text=${textMsg}`;
+                        window.open(waUrl, '_blank');
+                        alert('📥 রসিদ PNG ফাইলটি ডাউনলোড হয়েছে। এবার সরাসরি ওয়াটসঅ্যাপে পেস্ট/সংযুক্ত করে পাঠিয়ে দিন!');
+                    }
+                }, 'image/png');
+
+            } catch (err) {
+                alert('রসিদ প্রসেস করতে সমস্যা হয়েছে।');
+                console.error(err);
+            }
+        }
+
+        // Direct Download PNG
+        async function downloadReceiptPNG() {
+            const targetElement = document.getElementById('hiddenReceiptCard');
+            const canvas = await html2canvas(targetElement, { scale: 3, backgroundColor: '#ffffff' });
+            const link = document.createElement('a');
+            link.download = `Sakura_Receipt_${currentActiveTx.name}.png`;
+            link.href = canvas.toDataURL('image/png');
             link.click();
-            document.body.removeChild(link);
         }
 
-        function downloadBlankTemplate() {
-            const cardElement = document.getElementById('pointsCard');
-            html2canvas(cardElement, {
-                scale: 3, useCORS: true, backgroundColor: null
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'sakura_blank_stamp_card.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function resetLedgerWithPin() {
-            const pin = prompt("নিরাপত্তা পিন কোড লিখুন (ডিফল্ট: 1234):");
-            if (pin === "1234") {
-                if (confirm("সতর্কতা: গুগল শিটের সমস্ত হিসাব স্থায়ীভাবে মুছে ফেলতে চান?")) {
-                    fetch(SCRIPT_URL + "?action=clearAll", { method: "POST" })
-                    .then(res => res.text())
-                    .then(() => {
-                        fetchSheetData();
-                    });
-                }
-            } else if (pin !== null) {
-                alert("ভুল পিন কোড!");
+        // Reset Data
+        function resetAllData() {
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে সমস্ত লেনদেনের রেকর্ড মুছে ফেলতে চান?')) {
+                localStorage.removeItem('sakura_transactions');
+                transactions = [];
+                renderHistoryTable();
+                updateStoreMetrics();
+                document.getElementById('searchResultsArea').classList.add('hidden');
             }
         }
     </script>
