@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>সাকুরা মার্কেট - কাস্টমার ও পয়েন্ট ম্যানেজমেন্ট সিস্টেম</title>
+    <title>সাকুরা মার্কেট - কাস্টমার ও পয়েন্ট ম্যানেজমেন্ট সিস্টেম</title>
     <!-- FontAwesome & html2canvas -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -345,7 +345,7 @@
             <div class="brand-logo">咲</div>
             <div>
                 <div class="brand-title">সাকুরা মার্কেট</div>
-                <div class="brand-subtitle">গ্রাহক, পয়েন্ট ও অটোমেটেড সেলস ম্যানেজমেন্ট সিস্টেম</div>
+                <div class="brand-subtitle">গ্রাহক, পয়েন্ট ও অটোমেটেড সেলস ম্যানেজমেন্ট সিস্টেম</div>
             </div>
         </div>
         <div class="header-meta">
@@ -359,8 +359,8 @@
         <div>
             <div class="card-panel">
                 <div class="panel-title">
-                    <i class="fa-solid fa-user-plus"></i> ১. পয়েন্ট ও কাস্টমার রেজিস্টার
-                    <span style="font-size: 11px; background: rgba(250, 204, 21, 0.15); color: var(--accent-gold); padding: 2px 8px; border-radius: 12px; margin-left: auto;">৳৩০০ = ১ পয়েন্ট</span>
+                    <i class="fa-solid fa-user-plus"></i> ১. পয়েন্ট ও কাস্টমার রেজিস্টার
+                    <span style="font-size: 11px; background: rgba(250, 204, 21, 0.15); color: var(--accent-gold); padding: 2px 8px; border-radius: 12px; margin-left: auto;">৳৩০০ = ১ পয়েন্ট</span>
                 </div>
 
                 <form id="transactionForm" onsubmit="handleFormSubmit(event)">
@@ -370,8 +370,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">হোয়াটসঅ্যাপ / ফোন নম্বর (WhatsApp No) <span>*</span></label>
-                        <input type="text" id="custPhone" class="form-control" placeholder="যেমন: +8801712345678" required>
+                        <label class="form-label">হোয়াটসঅ্যাপ / ফোন নম্বর (WhatsApp No) <span>*</span></label>
+                        <input type="text" id="custPhone" class="form-control" placeholder="যেমন: 01712345678" required>
                     </div>
 
                     <div class="form-row">
@@ -380,7 +380,7 @@
                             <input type="date" id="custDob" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">পরিমাণ (টাকা ৳ / পয়েন্ট) <span>*</span></label>
+                            <label class="form-label">পরিমাণ (টাকা ৳ / পয়েন্ট) <span>*</span></label>
                             <input type="number" step="0.01" id="txAmount" class="form-control" placeholder="যেমন: ৩০০" required>
                         </div>
                     </div>
@@ -388,8 +388,8 @@
                     <div class="form-group">
                         <label class="form-label">লেনদেনের ধরন (Transaction Type)</label>
                         <select id="txType" class="form-control">
-                            <option value="sale">সাধারণ কেনাকাটা (পয়েন্ট জমা)</option>
-                            <option value="redeem">পয়েন্ট রিডিম / ক্যাশব্যাক (পয়েন্ট কর্তন)</option>
+                            <option value="sale">সাধারণ কেনাকাটা (পয়েন্ট জমা)</option>
+                            <option value="redeem">পয়েন্ট রিডিম / ক্যাশব্যাক (পয়েন্ট কর্তন)</option>
                             <option value="bonus">বিশেষ বোনাস পয়েন্ট</option>
                         </select>
                     </div>
@@ -409,15 +409,15 @@
                     <div class="metric-value" id="totalStoreSales">৳ 0.00</div>
                 </div>
                 <div class="metric-box">
-                    <div class="metric-label">মোট ইস্যুকৃত পয়েন্ট</div>
-                    <div class="metric-value gold" id="totalStorePoints">0.00 পয়েন্ট</div>
+                    <div class="metric-label">মোট ইস্যুকৃত পয়েন্ট</div>
+                    <div class="metric-value gold" id="totalStorePoints">0.00 পয়েন্ট</div>
                 </div>
             </div>
 
             <!-- Customer Search -->
             <div class="card-panel">
                 <div class="panel-title">
-                    <i class="fa-solid fa-magnifying-glass"></i> ২. কাস্টমার সার্চ (মোট কেনাকাটা ও পয়েন্ট যোগফল)
+                    <i class="fa-solid fa-magnifying-glass"></i> ২. কাস্টমার সার্চ (মোট কেনাকাটা ও পয়েন্ট যোগফল)
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0;">
@@ -435,8 +435,8 @@
                             <strong id="srSpend" class="text-green">৳ 0.00</strong>
                         </div>
                         <div class="search-res-item">
-                            <span>⭐ মোট জমানো পয়েন্ট (Total Points):</span>
-                            <strong id="srPoints" class="text-gold">0.00 পয়েন্ট</strong>
+                            <span>⭐ মোট জমানো পয়েন্ট (Total Points):</span>
+                            <strong id="srPoints" class="text-gold">0.00 পয়েন্ট</strong>
                         </div>
                         <div class="search-res-item">
                             <span>🔢 মোট লেনদেন সংখ্যা:</span>
@@ -449,7 +449,7 @@
             <!-- History Table -->
             <div class="card-panel">
                 <div class="panel-title">
-                    <i class="fa-solid fa-clock-rotate-left"></i> লেনদেনের ইতিহাস ও হোয়াটসঅ্যাপ রসিদ
+                    <i class="fa-solid fa-clock-rotate-left"></i> লেনদেনের ইতিহাস ও হোয়াটসঅ্যাপ রসিদ
                 </div>
 
                 <div class="table-container">
@@ -466,7 +466,7 @@
                         </thead>
                         <tbody id="historyTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td>
                             </tr>
                         </tbody>
                     </table>
@@ -485,7 +485,6 @@
     </div>
 
     <script>
-        // Updated with your latest Web App URL
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdemw1B2fjfWhUtf_n7Wv8ICud5NiY0DHigZ1L5oMGnzj0G-yX3zyA0rJun_8WptvfeA/exec"; 
 
         let transactions = JSON.parse(localStorage.getItem('sakura_transactions')) || [];
@@ -503,6 +502,19 @@
             }, 1000);
         }
 
+        // বাংলাদেশি ফোন নম্বর ফরম্যাট করার ফাংশন (+88 যোগ করা)
+        function formatBDPhone(phone) {
+            let cleaned = phone.replace(/[^0-9]/g, ''); // শুধু সংখ্যা রাখা
+            if (cleaned.startsWith('880')) {
+                return '+' + cleaned;
+            } else if (cleaned.startsWith('0')) {
+                return '+88' + cleaned;
+            } else if (cleaned.length === 10) {
+                return '+880' + cleaned;
+            }
+            return '+' + cleaned;
+        }
+
         function calculatePoints(amount, type) {
             let val = parseFloat(amount) || 0;
             if (type === 'sale') return (val / 300);
@@ -515,7 +527,8 @@
             e.preventDefault();
 
             const name = document.getElementById('custName').value.trim();
-            const phone = document.getElementById('custPhone').value.trim();
+            let rawPhone = document.getElementById('custPhone').value.trim();
+            const phone = formatBDPhone(rawPhone); // বাংলাদেশি কান্ট্রি কোড যুক্ত করা হলো
             const dob = document.getElementById('custDob').value || "N/A";
             const amount = parseFloat(document.getElementById('txAmount').value) || 0;
             const type = document.getElementById('txType').value;
@@ -546,7 +559,7 @@
             updateStoreMetrics();
             searchCustomerSummation();
 
-            alert('✅ সফলভাবে সংরক্ষিত এবং গুগোল শিটে পাঠানো হয়েছে!');
+            alert('✅ সফলভাবে সংরক্ষিত এবং গুগোল শিটে পাঠানো হয়েছে!');
         }
 
         function syncToGoogleSheets(data, actionType = 'add') {
@@ -564,7 +577,7 @@
         }
 
         function deleteTransaction(id) {
-            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে স্থায়ীভাবে মুছে ফেলতে চান?')) {
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে স্থায়ীভাবে মুছে ফেলতে চান?')) {
                 const txToDelete = transactions.find(t => t.id === id);
                 
                 if (txToDelete) {
@@ -580,14 +593,15 @@
             }
         }
 
+        // সরাসরি হোয়াটসঅ্যাপে রসিদ ও মেসেজ পাঠানোর ফাংশন
         function sendWhatsAppReceipt(id) {
             const tx = transactions.find(t => t.id === id);
             if (!tx) return;
 
-            let typeText = tx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (tx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
+            let typeText = tx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (tx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
 
             document.getElementById('receiptDynamicContent').innerHTML = `
-                <div style="margin-bottom:4px;"><b>সময়:</b> ${tx.timestamp}</div>
+                <div style="margin-bottom:4px;"><b>সময়:</b> ${tx.timestamp}</div>
                 <div style="margin-bottom:4px;"><b>নাম:</b> ${tx.name}</div>
                 <div style="margin-bottom:4px;"><b>ফোন:</b> ${tx.phone}</div>
                 <div style="margin-bottom:4px;"><b>লেনদেন:</b> ${typeText}</div>
@@ -599,16 +613,20 @@
             html2canvas(captureArea, { scale: 3 }).then(canvas => {
                 canvas.toBlob(blob => {
                     const file = new File([blob], "Sakura_Receipt.png", { type: "image/png" });
+                    
+                    // শুধু সংখ্যা রেখে WhatsApp লিঙ্কের জন্য প্রস্তুত করা (+88 সহ)
                     let phoneClean = tx.phone.replace(/[^0-9]/g, '');
-                    let textMsg = encodeURIComponent(`🌸 Sakura Market Receipt 🌸\nCustomer: ${tx.name}\nAmount: ৳${tx.amount}\nPoints: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}`);
+                    let textMsg = encodeURIComponent(`🌸 সাকুরা মার্কেট রসিদ 🌸\nপ্রিয় ${tx.name},\nআমাদের সাথে কেনাকাটা করার জন্য ধন্যবাদ!\nপরিমাণ: ৳${tx.amount}\nপয়েন্ট: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}`);
 
+                    // যদি মোবাইল ডিভাইস বা ব্রাউজার ফাইল শেয়ার সাপোর্ট করে
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
                             files: [file],
-                            title: 'Sakura Market Receipt',
-                            text: `Sakura Market Receipt for ${tx.name}`
+                            title: 'সাকুরা মার্কেট রসিদ',
+                            text: `সাকুরা মার্কেট লেনদেন স্লিপ - ${tx.name}`
                         }).catch(() => {});
                     } else {
+                        // কম্পিউটার বা ব্রাউজার ফলব্যাক: ইমেজ ডাউনলোড হবে এবং সরাসরি নির্দিষ্ট কাস্টমারের WhatsApp চ্যাট ওপেন হবে
                         const link = document.createElement('a');
                         link.href = URL.createObjectURL(blob);
                         link.download = `Receipt_${tx.name}.png`;
@@ -647,13 +665,13 @@
                 resultsArea.style.display = "block";
                 document.getElementById('srName').innerText = matchedName;
                 document.getElementById('srSpend').innerText = `৳ ${totalSpend.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
-                document.getElementById('srPoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
+                document.getElementById('srPoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
                 document.getElementById('srCount').innerText = `${count} টি`;
             } else {
                 resultsArea.style.display = "block";
-                document.getElementById('srName').innerText = "পাওয়া যায়নি";
+                document.getElementById('srName').innerText = "পাওয়া যায়নি";
                 document.getElementById('srSpend').innerText = "৳ 0.00";
-                document.getElementById('srPoints').innerText = "0.00 পয়েন্ট";
+                document.getElementById('srPoints').innerText = "0.00 পয়েন্ট";
                 document.getElementById('srCount').innerText = "0 টি";
             }
         }
@@ -661,7 +679,7 @@
         function renderHistoryTable() {
             const tbody = document.getElementById('historyTableBody');
             if (transactions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td></tr>`;
                 return;
             }
 
@@ -683,7 +701,7 @@
                         <td class="${ptsClass}"><strong>${ptsSign}${parseFloat(t.points).toFixed(2)}</strong></td>
                         <td>
                             <div class="action-btns">
-                                <button class="btn-whatsapp" onclick="sendWhatsAppReceipt(${t.id})" title="হোয়াটসঅ্যাপে রসিদ পাঠান"><i class="fa-brands fa-whatsapp"></i></button>
+                                <button class="btn-whatsapp" onclick="sendWhatsAppReceipt(${t.id})" title="হোয়াটসঅ্যাপে রসিদ পাঠান"><i class="fa-brands fa-whatsapp"></i></button>
                                 <button class="btn-delete" onclick="deleteTransaction(${t.id})" title="ডিলিট"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
@@ -697,7 +715,7 @@
             let totalPoints = transactions.reduce((sum, t) => sum + parseFloat(t.points || 0), 0);
 
             document.getElementById('totalStoreSales').innerText = `৳ ${totalSales.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
-            document.getElementById('totalStorePoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
+            document.getElementById('totalStorePoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
         }
 
         function resetAllData() {
