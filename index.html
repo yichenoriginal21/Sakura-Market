@@ -371,7 +371,7 @@
 
                     <div class="form-group">
                         <label class="form-label">হোয়াটসঅ্যাপ / ফোন নম্বর (WhatsApp No) <span>*</span></label>
-                        <input type="text" id="custPhone" class="form-control" placeholder="যেমন: 01712345678" required>
+                        <input type="text" id="custPhone" class="form-control" placeholder="যেমন: 01789504376" required>
                     </div>
 
                     <div class="form-row">
@@ -502,17 +502,17 @@
             }, 1000);
         }
 
-        // বাংলাদেশি ফোন নম্বর ফরম্যাট করার ফাংশন (+88 যোগ করা)
-        function formatBDPhone(phone) {
-            let cleaned = phone.replace(/[^0-9]/g, ''); // শুধু সংখ্যা রাখা
-            if (cleaned.startsWith('880')) {
-                return '+' + cleaned;
-            } else if (cleaned.startsWith('0')) {
-                return '+88' + cleaned;
-            } else if (cleaned.length === 10) {
-                return '+880' + cleaned;
+        // বাংলাদেশি নম্বরে স্বয়ংক্রিয়ভাবে 880 যোগ করার সংকেত
+        function cleanPhoneNumber(phone) {
+            let num = phone.replace(/[^0-9]/g, '');
+            if (num.startsWith('880')) {
+                return num;
+            } else if (num.startsWith('0')) {
+                return '88' + num;
+            } else if (num.length === 10) {
+                return '880' + num;
             }
-            return '+' + cleaned;
+            return '88' + num;
         }
 
         function calculatePoints(amount, type) {
@@ -527,8 +527,8 @@
             e.preventDefault();
 
             const name = document.getElementById('custName').value.trim();
-            let rawPhone = document.getElementById('custPhone').value.trim();
-            const phone = formatBDPhone(rawPhone); // বাংলাদেশি কান্ট্রি কোড যুক্ত করা হলো
+            const rawPhone = document.getElementById('custPhone').value.trim();
+            const phone = '+' + cleanPhoneNumber(rawPhone);
             const dob = document.getElementById('custDob').value || "N/A";
             const amount = parseFloat(document.getElementById('txAmount').value) || 0;
             const type = document.getElementById('txType').value;
@@ -593,7 +593,7 @@
             }
         }
 
-        // সরাসরি হোয়াটসঅ্যাপে রসিদ ও মেসেজ পাঠানোর ফাংশন
+        // wa.me টেকনোলজি দিয়ে কন্টাক্ট সেভ না করে সরাসরি মেসেজ পাঠানোর ফাংশন
         function sendWhatsAppReceipt(id) {
             const tx = transactions.find(t => t.id === id);
             if (!tx) return;
@@ -612,28 +612,28 @@
             const captureArea = document.getElementById('receiptCaptureArea');
             html2canvas(captureArea, { scale: 3 }).then(canvas => {
                 canvas.toBlob(blob => {
-                    const file = new File([blob], "Sakura_Receipt.png", { type: "image/png" });
+                    const phoneClean = cleanPhoneNumber(tx.phone);
                     
-                    // শুধু সংখ্যা রেখে WhatsApp লিঙ্কের জন্য প্রস্তুত করা (+88 সহ)
-                    let phoneClean = tx.phone.replace(/[^0-9]/g, '');
-                    let textMsg = encodeURIComponent(`🌸 সাকুরা মার্কেট রসিদ 🌸\nপ্রিয় ${tx.name},\nআমাদের সাথে কেনাকাটা করার জন্য ধন্যবাদ!\nপরিমাণ: ৳${tx.amount}\nপয়েন্ট: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}`);
+                    // ফরম্যাট করা রসিদের টেক্সট মেসেজ
+                    const textMsg = encodeURIComponent(
+                        `🌸 *সাকুরা মার্কেট - রসিদ* 🌸\n\n` +
+                        `প্রিয় *${tx.name}*,\n` +
+                        `আমাদের দোকানে কেনাকাটা করার জন্য ধন্যবাদ!\n\n` +
+                        `📅 সময়: ${tx.timestamp}\n` +
+                        `🛒 লেনদেন: ${typeText}\n` +
+                        `💰 পরিমাণ: ৳${tx.amount}\n` +
+                        `⭐ পয়েন্ট অর্জন/আপডেট: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
+                        `সাকুরা মার্কেট, সিলেট।`
+                    );
 
-                    // যদি মোবাইল ডিভাইস বা ব্রাউজার ফাইল শেয়ার সাপোর্ট করে
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            files: [file],
-                            title: 'সাকুরা মার্কেট রসিদ',
-                            text: `সাকুরা মার্কেট লেনদেন স্লিপ - ${tx.name}`
-                        }).catch(() => {});
-                    } else {
-                        // কম্পিউটার বা ব্রাউজার ফলব্যাক: ইমেজ ডাউনলোড হবে এবং সরাসরি নির্দিষ্ট কাস্টমারের WhatsApp চ্যাট ওপেন হবে
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = `Receipt_${tx.name}.png`;
-                        link.click();
-                        
-                        window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
-                    }
+                    // ১. PNG পিকচার রসিদ ডাউনলোড হবে
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `Receipt_${tx.name}.png`;
+                    link.click();
+
+                    // ২. কন্টাক্ট সেভ ছাড়াই সরাসরি wa.me লিংকের মাধ্যমে নির্দিষ্ট নম্বরে চ্যাট পপ-আপ হবে
+                    window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
         }
