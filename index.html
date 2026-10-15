@@ -655,7 +655,7 @@
 
         function calculatePoints(amount, type) {
             let val = parseFloat(amount) || 0;
-            if (type === 'sale') return (val / 300);
+            if (type === 'sale') return (val / 500);
             else if (type === 'redeem') return -Math.abs(val);
             else if (type === 'bonus') return Math.abs(val);
             return 0;
