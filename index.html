@@ -626,7 +626,6 @@
     </div>
 
     <script>
-        // আপনার লেটেস্ট ভার্সন ৭ এর ইউআরএল
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0n2NhgJfpphaas9AFpfojod5CS5Aba7NN8j7Vujfyexi-5dbVco4KO2xTJ-gFXHFgaw/exec"; 
 
         let transactions = [];
@@ -647,7 +646,6 @@
             document.getElementById('txAmount').value = val;
         }
 
-        // গুগল শিট থেকে সকল ডিভাইস/মোবাইলে লাইভ ডেটা ফেচ
         function fetchDataFromGoogleSheets() {
             fetch(SCRIPT_URL + "?action=get")
                 .then(response => response.json())
@@ -690,7 +688,7 @@
             const computedPoints = calculatePoints(amount, type);
 
             const newTx = {
-                id: Date.now(),
+                id: String(Date.now()),
                 timestamp: new Date().toLocaleString('bn-BD'),
                 name: name,
                 phone: phone,
@@ -726,24 +724,27 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             }).then(() => {
-                setTimeout(fetchDataFromGoogleSheets, 1200);
+                setTimeout(fetchDataFromGoogleSheets, 1500);
             }).catch(err => console.error('Sync Error:', err));
         }
 
         function deleteTransaction(id) {
             if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি মুছে ফেলতে চান?')) {
-                const txToDelete = transactions.find(t => t.id == id);
-                if (txToDelete) syncToGoogleSheets(txToDelete, 'delete');
+                const txToDelete = transactions.find(t => String(t.id) === String(id));
+                if (txToDelete) {
+                    syncToGoogleSheets(txToDelete, 'delete');
+                }
 
-                transactions = transactions.filter(t => t.id != id);
+                transactions = transactions.filter(t => String(t.id) !== String(id));
                 renderHistoryTable();
                 updateStoreMetrics();
                 searchCustomerSummation();
             }
         }
 
+        // WhatsApp Receipt PNG Generator Function
         function sendWhatsAppReceipt(id) {
-            const tx = transactions.find(t => t.id == id);
+            const tx = transactions.find(t => String(t.id) === String(id));
             if (!tx) return;
 
             let typeText = tx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (tx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
@@ -771,11 +772,13 @@
                         `Sakura Market, Sylhet.`
                     );
 
+                    // Download PNG Receipt Automatically
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = `Sakura_Receipt_${tx.name}.png`;
                     link.click();
 
+                    // Open WhatsApp Chat Directly
                     window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
@@ -837,8 +840,8 @@
                         <td class="${ptsClass}"><strong>${ptsSign}${parseFloat(t.points).toFixed(2)}</strong></td>
                         <td>
                             <div class="action-btns">
-                                <button class="btn-whatsapp" onclick="sendWhatsAppReceipt(${t.id})" title="হোয়াটসঅ্যাপে রসিদ পাঠান"><i class="fa-brands fa-whatsapp"></i></button>
-                                <button class="btn-delete" onclick="deleteTransaction(${t.id})" title="ডিলিট"><i class="fa-solid fa-trash"></i></button>
+                                <button class="btn-whatsapp" onclick="sendWhatsAppReceipt('${t.id}')" title="হোয়াটসঅ্যাপে রসিদ পাঠান"><i class="fa-brands fa-whatsapp"></i></button>
+                                <button class="btn-delete" onclick="deleteTransaction('${t.id}')" title="ডিলিট"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
