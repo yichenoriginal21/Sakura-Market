@@ -321,9 +321,7 @@
         }
         .btn-delete:hover { background: #b91c1c; }
 
-        /* ===================================================
-           🌸 JAPANESE VIBES THERMAL RECEIPT STYLE
-        ==================================================== */
+        /* Japanese Vibes Receipt */
         #receiptCaptureArea {
             position: absolute;
             left: -9999px;
@@ -333,7 +331,6 @@
             padding: 30px 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             font-family: 'Space Mono', 'Noto Sans JP', monospace;
-            position: relative;
             border-top: 6px solid #e11d48;
         }
 
@@ -476,7 +473,7 @@
         </div>
         <div class="header-meta">
             <div class="time-badge" id="liveClock">--:--:-- PM</div>
-            <button class="btn-reset" onclick="resetAllData()"><i class="fa-solid fa-rotate-left"></i> ডেটা রিসেট</button>
+            <button class="btn-reset" onclick="fetchDataFromGoogleSheets()"><i class="fa-solid fa-rotate-right"></i> রিফ্রেশ ডাটা</button>
         </div>
     </header>
 
@@ -592,7 +589,7 @@
                         </thead>
                         <tbody id="historyTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">কোনো লেনদেন রেকর্ড পাওয়া যায়নি</td>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">গুগল শিট থেকে ডাটা লোড হচ্ছে...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -601,7 +598,7 @@
         </div>
     </div>
 
-    <!-- 🌸 JAPANESE VIBES THERMAL RECEIPT TEMPLATE FOR PNG GENERATION -->
+    <!-- 🌸 JAPANESE THERMAL RECEIPT -->
     <div id="receiptCaptureArea">
         <div class="jp-stamp">済</div>
         <div class="jp-receipt-header">
@@ -610,9 +607,7 @@
             <div class="jp-loc-text">Sylhet, Bangladesh • Official Receipt</div>
         </div>
 
-        <div class="jp-details-body" id="receiptDynamicContent">
-            <!-- Dynamic Data inserted via JavaScript -->
-        </div>
+        <div class="jp-details-body" id="receiptDynamicContent"></div>
 
         <div class="jp-footer">
             <div class="jp-barcode"></div>
@@ -623,14 +618,14 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdemw1B2fjfWhUtf_n7Wv8ICud5NiY0DHigZ1L5oMGnzj0G-yX3zyA0rJun_8WptvfeA/exec"; 
+        // আপডেটেড ওয়েব অ্যাপ ইউআরএল
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1t4ctz1xdicihi3bujoGKO_jjfax5y0lWa9Z1J1QdQBUy6SSm7Fv9x0YasizXiaSQFg/exec"; 
 
-        let transactions = JSON.parse(localStorage.getItem('sakura_transactions')) || [];
+        let transactions = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             startClock();
-            renderHistoryTable();
-            updateStoreMetrics();
+            fetchDataFromGoogleSheets();
         });
 
         function startClock() {
@@ -640,24 +635,34 @@
             }, 1000);
         }
 
-        // Auto format BD Phone Number
+        // গুগল শিট থেকে লাইভ ডেটা ফেচ করার ফাংশন
+        function fetchDataFromGoogleSheets() {
+            fetch(SCRIPT_URL + "?action=get")
+                .then(response => response.json())
+                .then(data => {
+                    transactions = data || [];
+                    renderHistoryTable();
+                    updateStoreMetrics();
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--red-text); padding: 20px;">ডাটা লোড করতে সমস্যা হয়েছে।</td></tr>`;
+                });
+        }
+
         function cleanPhoneNumber(phone) {
             let num = phone.replace(/[^0-9]/g, '');
-            if (num.startsWith('880')) {
-                return num;
-            } else if (num.startsWith('0')) {
-                return '88' + num;
-            } else if (num.length === 10) {
-                return '880' + num;
-            }
+            if (num.startsWith('880')) return num;
+            if (num.startsWith('0')) return '88' + num;
+            if (num.length === 10) return '880' + num;
             return '88' + num;
         }
 
         function calculatePoints(amount, type) {
             let val = parseFloat(amount) || 0;
             if (type === 'sale') return (val / 500);
-            else if (type === 'redeem') return -Math.abs(val);
-            else if (type === 'bonus') return Math.abs(val);
+            if (type === 'redeem') return -Math.abs(val);
+            if (type === 'bonus') return Math.abs(val);
             return 0;
         }
 
@@ -684,7 +689,8 @@
             };
 
             transactions.unshift(newTx);
-            localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
+            renderHistoryTable();
+            updateStoreMetrics();
 
             syncToGoogleSheets(newTx, 'add');
 
@@ -693,11 +699,7 @@
             document.getElementById('custName').value = '';
             document.getElementById('custDob').value = '';
             
-            renderHistoryTable();
-            updateStoreMetrics();
-            searchCustomerSummation();
-
-            alert('✅ সফলভাবে সংরক্ষিত এবং গুগোল শিটে পাঠানো হয়েছে!');
+            alert('✅ তথ্য সফলভাবে গুগোল শিটে পাঠানো হয়েছে!');
         }
 
         function syncToGoogleSheets(data, actionType = 'add') {
@@ -711,93 +713,57 @@
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).catch(err => console.error('Google Sheets Sync Error:', err));
+            }).then(() => {
+                setTimeout(fetchDataFromGoogleSheets, 1500);
+            }).catch(err => console.error('Sync Error:', err));
         }
 
         function deleteTransaction(id) {
-            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে স্থায়ীভাবে মুছে ফেলতে চান?')) {
-                const txToDelete = transactions.find(t => t.id === id);
-                
-                if (txToDelete) {
-                    syncToGoogleSheets(txToDelete, 'delete');
-                }
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে মুছে ফেলতে চান?')) {
+                const txToDelete = transactions.find(t => t.id == id);
+                if (txToDelete) syncToGoogleSheets(txToDelete, 'delete');
 
-                transactions = transactions.filter(t => t.id !== id);
-                localStorage.setItem('sakura_transactions', JSON.stringify(transactions));
-                
+                transactions = transactions.filter(t => t.id != id);
                 renderHistoryTable();
                 updateStoreMetrics();
                 searchCustomerSummation();
             }
         }
 
-        // Japanese Aesthetic Receipt Generator & wa.me Trigger
         function sendWhatsAppReceipt(id) {
-            const tx = transactions.find(t => t.id === id);
+            const tx = transactions.find(t => t.id == id);
             if (!tx) return;
 
             let typeText = tx.type === 'sale' ? 'সাধারণ কেনাকাটা' : (tx.type === 'redeem' ? 'পয়েন্ট রিডিম' : 'বোনাস পয়েন্ট');
 
-            // Insert Japanese Vibes Layout Content
             document.getElementById('receiptDynamicContent').innerHTML = `
-                <div class="jp-row">
-                    <span class="jp-label">TIME / 日時:</span>
-                    <span class="jp-val">${tx.timestamp}</span>
-                </div>
-                <div class="jp-row">
-                    <span class="jp-label">CUSTOMER / 氏名:</span>
-                    <span class="jp-val">${tx.name}</span>
-                </div>
-                <div class="jp-row">
-                    <span class="jp-label">PHONE / 電話:</span>
-                    <span class="jp-val">${tx.phone}</span>
-                </div>
+                <div class="jp-row"><span class="jp-label">TIME / 日時:</span><span class="jp-val">${tx.timestamp}</span></div>
+                <div class="jp-row"><span class="jp-label">CUSTOMER / 氏名:</span><span class="jp-val">${tx.name}</span></div>
+                <div class="jp-row"><span class="jp-label">PHONE / 電話:</span><span class="jp-val">${tx.phone}</span></div>
                 <div class="jp-divider"></div>
-                <div class="jp-row">
-                    <span class="jp-label">TYPE / 種別:</span>
-                    <span class="jp-val" style="color:#e11d48;">${typeText}</span>
-                </div>
-                
+                <div class="jp-row"><span class="jp-label">TYPE / 種別:</span><span class="jp-val" style="color:#e11d48;">${typeText}</span></div>
                 <div class="jp-total-box">
-                    <div class="jp-row">
-                        <span class="jp-label">AMOUNT / 金額:</span>
-                        <span class="jp-val">৳ ${parseFloat(tx.amount || 0).toLocaleString()}</span>
-                    </div>
+                    <div class="jp-row"><span class="jp-label">AMOUNT / 金額:</span><span class="jp-val">৳ ${parseFloat(tx.amount || 0).toLocaleString()}</span></div>
                 </div>
-
-                <div class="jp-row">
-                    <span class="jp-label">POINTS / ポイント:</span>
-                    <span class="jp-val" style="color:${tx.points >= 0 ? '#16a34a':'#dc2626'}; font-size: 15px;">
-                        ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}
-                    </span>
-                </div>
+                <div class="jp-row"><span class="jp-label">POINTS / ポイント:</span><span class="jp-val" style="color:${tx.points >= 0 ? '#16a34a':'#dc2626'}; font-size: 15px;">${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}</span></div>
             `;
 
             const captureArea = document.getElementById('receiptCaptureArea');
-            
-            // High Density Image Rendering
             html2canvas(captureArea, { scale: 3, backgroundColor: '#faf8f5' }).then(canvas => {
                 canvas.toBlob(blob => {
                     const phoneClean = cleanPhoneNumber(tx.phone);
-                    
                     const textMsg = encodeURIComponent(
                         `🌸 *SAKURA MARKET - JAPANESE RECEIPT* 🌸\n\n` +
-                        `Dear *${tx.name}*,\n` +
-                        `Thank you for shopping with us!\n\n` +
-                        `📅 Date: ${tx.timestamp}\n` +
-                        `🛒 Type: ${typeText}\n` +
-                        `💰 Amount: ৳${tx.amount}\n` +
-                        `⭐ Points: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
+                        `Dear *${tx.name}*,\nThank you for shopping with us!\n\n` +
+                        `📅 Date: ${tx.timestamp}\n🛒 Type: ${typeText}\n💰 Amount: ৳${tx.amount}\n⭐ Points: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
                         `Sakura Market, Sylhet.`
                     );
 
-                    // Download PNG Receipt
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = `Sakura_Receipt_${tx.name}.png`;
                     link.click();
 
-                    // Open direct wa.me link
                     window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
@@ -812,10 +778,7 @@
                 return;
             }
 
-            let totalSpend = 0;
-            let totalPoints = 0;
-            let count = 0;
-            let matchedName = "";
+            let totalSpend = 0, totalPoints = 0, count = 0, matchedName = "";
 
             transactions.forEach(t => {
                 if (t.name.toLowerCase().includes(query)) {
@@ -849,11 +812,7 @@
             }
 
             tbody.innerHTML = transactions.map(t => {
-                let typeBadge = '';
-                if (t.type === 'sale') typeBadge = `<span class="badge-type badge-sale">বিক্রি</span>`;
-                else if (t.type === 'redeem') typeBadge = `<span class="badge-type badge-redeem">রিডিম</span>`;
-                else typeBadge = `<span class="badge-type badge-bonus">বোনাস</span>`;
-
+                let typeBadge = t.type === 'sale' ? `<span class="badge-type badge-sale">বিক্রি</span>` : (t.type === 'redeem' ? `<span class="badge-type badge-redeem">রিডিম</span>` : `<span class="badge-type badge-bonus">বোনাস</span>`);
                 let ptsClass = t.points >= 0 ? 'text-green' : 'text-red';
                 let ptsSign = t.points >= 0 ? '+' : '';
 
@@ -881,16 +840,6 @@
 
             document.getElementById('totalStoreSales').innerText = `৳ ${totalSales.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
             document.getElementById('totalStorePoints').innerText = `${totalPoints.toFixed(2)} পয়েন্ট`;
-        }
-
-        function resetAllData() {
-            if (confirm('⚠️ সমস্ত ডাটা মুছে ফেলতে চান?')) {
-                localStorage.removeItem('sakura_transactions');
-                transactions = [];
-                renderHistoryTable();
-                updateStoreMetrics();
-                document.getElementById('searchResultsArea').style.display = 'none';
-            }
         }
     </script>
 </body>
