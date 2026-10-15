@@ -321,7 +321,7 @@
         }
         .btn-delete:hover { background: #b91c1c; }
 
-        /* Japanese Vibes Receipt */
+        /* Japanese Thermal Receipt Preview */
         #receiptCaptureArea {
             position: absolute;
             left: -9999px;
@@ -508,6 +508,14 @@
                         </div>
                     </div>
 
+                    <!-- Quick Preset Amounts -->
+                    <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+                        <button type="button" onclick="setAmount(100)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳১০০</button>
+                        <button type="button" onclick="setAmount(500)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳৫০০</button>
+                        <button type="button" onclick="setAmount(1000)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳১০০০</button>
+                        <button type="button" onclick="setAmount(2000)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳২০০০</button>
+                    </div>
+
                     <div class="form-group">
                         <label class="form-label">লেনদেনের ধরন (Transaction Type)</label>
                         <select id="txType" class="form-control">
@@ -618,8 +626,8 @@
     </div>
 
     <script>
-        // আপডেটেড ওয়েব অ্যাপ ইউআরএল
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1t4ctz1xdicihi3bujoGKO_jjfax5y0lWa9Z1J1QdQBUy6SSm7Fv9x0YasizXiaSQFg/exec"; 
+        // আপনার লেটেস্ট ভার্সন ৭ এর ইউআরএল
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0n2NhgJfpphaas9AFpfojod5CS5Aba7NN8j7Vujfyexi-5dbVco4KO2xTJ-gFXHFgaw/exec"; 
 
         let transactions = [];
 
@@ -635,7 +643,11 @@
             }, 1000);
         }
 
-        // গুগল শিট থেকে লাইভ ডেটা ফেচ করার ফাংশন
+        function setAmount(val) {
+            document.getElementById('txAmount').value = val;
+        }
+
+        // গুগল শিট থেকে সকল ডিভাইস/মোবাইলে লাইভ ডেটা ফেচ
         function fetchDataFromGoogleSheets() {
             fetch(SCRIPT_URL + "?action=get")
                 .then(response => response.json())
@@ -646,7 +658,7 @@
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--red-text); padding: 20px;">ডাটা লোড করতে সমস্যা হয়েছে।</td></tr>`;
+                    document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--red-text); padding: 20px;">ডাটা লোড করতে সমস্যা হয়েছে। রিফ্রেশ করে দেখুন।</td></tr>`;
                 });
         }
 
@@ -699,7 +711,7 @@
             document.getElementById('custName').value = '';
             document.getElementById('custDob').value = '';
             
-            alert('✅ তথ্য সফলভাবে গুগোল শিটে পাঠানো হয়েছে!');
+            alert('✅ নতুন লেনদেন সফলভাবে গুগল শিটে সিংক হয়েছে!');
         }
 
         function syncToGoogleSheets(data, actionType = 'add') {
@@ -714,12 +726,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             }).then(() => {
-                setTimeout(fetchDataFromGoogleSheets, 1500);
+                setTimeout(fetchDataFromGoogleSheets, 1200);
             }).catch(err => console.error('Sync Error:', err));
         }
 
         function deleteTransaction(id) {
-            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি গুগল শিট ও ড্যাশবোর্ড থেকে মুছে ফেলতে চান?')) {
+            if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি মুছে ফেলতে চান?')) {
                 const txToDelete = transactions.find(t => t.id == id);
                 if (txToDelete) syncToGoogleSheets(txToDelete, 'delete');
 
