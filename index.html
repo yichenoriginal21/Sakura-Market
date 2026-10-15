@@ -489,6 +489,14 @@
                     <span style="font-size: 11px; background: rgba(250, 204, 21, 0.15); color: var(--accent-gold); padding: 2px 8px; border-radius: 12px; margin-left: auto;">৳৫০০ = ১ পয়েন্ট = ১ টাকা</span>
                 </div>
 
+                <!-- ভয়েস ইনপুট বাটন -->
+                <div style="margin-bottom: 15px; text-align: center;">
+                    <button type="button" onclick="startVoiceInput()" style="background: #25d366; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-microphone"></i> মুখে বলে নাম লিখুন (Voice Input)
+                    </button>
+                    <span id="voiceStatus" style="font-size: 11px; color: var(--accent-gold); display: block; margin-top: 4px;"></span>
+                </div>
+
                 <form id="transactionForm" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label class="form-label">গ্রাহকের নাম (Customer Name) <span>*</span></label>
@@ -509,6 +517,14 @@
                             <label class="form-label">পরিমাণ (টাকা ৳ / পয়েন্ট) <span>*</span></label>
                             <input type="number" step="0.01" id="txAmount" class="form-control" placeholder="যেমন: ৩০০" required>
                         </div>
+                    </div>
+
+                    <!-- কুইক অ্যামাউন্ট সিলেক্ট বাটন -->
+                    <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+                        <button type="button" onclick="setAmount(100)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳১০০</button>
+                        <button type="button" onclick="setAmount(500)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳৫০০</button>
+                        <button type="button" onclick="setAmount(1000)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳১০০০</button>
+                        <button type="button" onclick="setAmount(2000)" style="flex:1; background:#334155; color:#fff; border:none; padding:6px; border-radius:6px; font-size:12px; cursor:pointer;">৳২০০০</button>
                     </div>
 
                     <div class="form-group">
@@ -640,6 +656,37 @@
             }, 1000);
         }
 
+        function setAmount(val) {
+            document.getElementById('txAmount').value = val;
+        }
+
+        // Voice Input Function
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert('আপনার ব্রাউজার ভয়েস ইনপুট সমর্থন করে না। Google Chrome ব্যবহার করুন।');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'bn-BD';
+            recognition.interimResults = false;
+
+            document.getElementById('voiceStatus').innerText = '🎤 শুনছি... কাস্টমারের নাম বলুন';
+
+            recognition.onresult = function(event) {
+                const speechText = event.results[0][0].transcript;
+                document.getElementById('voiceStatus').innerText = '✅ নাম: ' + speechText;
+                document.getElementById('custName').value = speechText;
+            };
+
+            recognition.onerror = function() {
+                document.getElementById('voiceStatus').innerText = '❌ বুঝতে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+            };
+
+            recognition.start();
+        }
+
         // Auto format BD Phone Number
         function cleanPhoneNumber(phone) {
             let num = phone.replace(/[^0-9]/g, '');
@@ -692,6 +739,7 @@
             document.getElementById('custPhone').value = '';
             document.getElementById('custName').value = '';
             document.getElementById('custDob').value = '';
+            document.getElementById('voiceStatus').innerText = '';
             
             renderHistoryTable();
             updateStoreMetrics();
@@ -775,29 +823,30 @@
 
             const captureArea = document.getElementById('receiptCaptureArea');
             
-            // High Density Image Rendering
+            // High Density Image Rendering & Auto WhatsApp Integration
             html2canvas(captureArea, { scale: 3, backgroundColor: '#faf8f5' }).then(canvas => {
                 canvas.toBlob(blob => {
                     const phoneClean = cleanPhoneNumber(tx.phone);
                     
                     const textMsg = encodeURIComponent(
-                        `🌸 *SAKURA MARKET - JAPANESE RECEIPT* 🌸\n\n` +
-                        `Dear *${tx.name}*,\n` +
-                        `Thank you for shopping with us!\n\n` +
-                        `📅 Date: ${tx.timestamp}\n` +
-                        `🛒 Type: ${typeText}\n` +
-                        `💰 Amount: ৳${tx.amount}\n` +
-                        `⭐ Points: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)}\n\n` +
-                        `Sakura Market, Sylhet.`
+                        `🌸 *SAKURA MARKET - OFFICIAL RECEIPT* 🌸\n` +
+                        `-----------------------------------\n` +
+                        `👤 গ্রাহক: *${tx.name}*\n` +
+                        `📅 সময়: ${tx.timestamp}\n` +
+                        `🛒 ধরন: ${typeText}\n` +
+                        `💰 পরিমাণ: ৳${tx.amount}\n` +
+                        `⭐ পয়েন্ট: ${tx.points >= 0 ? '+' : ''}${parseFloat(tx.points).toFixed(2)} Star Points\n` +
+                        `-----------------------------------\n` +
+                        `サンキュー • Thank you for shopping! 🌸`
                     );
 
-                    // Download PNG Receipt
+                    // Download PNG Receipt Image automatically
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = `Sakura_Receipt_${tx.name}.png`;
                     link.click();
 
-                    // Open direct wa.me link
+                    // Open WhatsApp chat directly
                     window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
