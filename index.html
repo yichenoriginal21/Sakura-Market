@@ -321,7 +321,6 @@
         }
         .btn-delete:hover { background: #b91c1c; }
 
-        /* Japanese Thermal Receipt Preview */
         #receiptCaptureArea {
             position: absolute;
             left: -9999px;
@@ -472,6 +471,7 @@
             </div>
         </div>
         <div class="header-meta">
+            <div id="syncStatusBadge" style="font-size: 12px; color: var(--green-text);">🟢 অনলাইন</div>
             <div class="time-badge" id="liveClock">--:--:-- PM</div>
             <button class="btn-reset" onclick="fetchDataFromGoogleSheets()"><i class="fa-solid fa-rotate-right"></i> রিফ্রেশ ডাটা</button>
         </div>
@@ -626,14 +626,42 @@
     </div>
 
     <script>
+        // Register Service Worker for Offline PWA Access
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('ServiceWorker offline ready!', reg))
+                    .catch((err) => console.log('ServiceWorker registration failed', err));
+            });
+        }
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmq8KPhAomoZKCuFTt_A1Xs483vnaEMNgBipZs2xuSrQWS75-puWiEpBmRVgXvOgCImQ/exec"; 
 
         let transactions = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             startClock();
+            checkNetworkStatus();
             fetchDataFromGoogleSheets();
+
+            window.addEventListener('online', () => {
+                checkNetworkStatus();
+                syncOfflineTransactions();
+            });
+            window.addEventListener('offline', checkNetworkStatus);
         });
+
+        function checkNetworkStatus() {
+            const badge = document.getElementById('syncStatusBadge');
+            if (navigator.onLine) {
+                badge.innerText = "🟢 অনলাইন";
+                badge.style.color = "var(--green-text)";
+                syncOfflineTransactions();
+            } else {
+                badge.innerText = "🔴 অফলাইন মোড";
+                badge.style.color = "var(--red-text)";
+            }
+        }
 
         function startClock() {
             setInterval(() => {
@@ -647,17 +675,34 @@
         }
 
         function fetchDataFromGoogleSheets() {
+            if (!navigator.onLine) {
+                loadLocalCache();
+                return;
+            }
+
             fetch(SCRIPT_URL + "?action=get")
                 .then(response => response.json())
                 .then(data => {
                     transactions = data || [];
+                    localStorage.setItem('sakura_market_cache', JSON.stringify(transactions));
                     renderHistoryTable();
                     updateStoreMetrics();
                 })
                 .catch(err => {
-                    console.error('Fetch Error:', err);
-                    document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--red-text); padding: 20px;">ডাটা লোড করতে সমস্যা হয়েছে। রিফ্রেশ করে দেখুন।</td></tr>`;
+                    console.warn('Fetch Error, loading local cache:', err);
+                    loadLocalCache();
                 });
+        }
+
+        function loadLocalCache() {
+            const cached = localStorage.getItem('sakura_market_cache');
+            if (cached) {
+                transactions = JSON.parse(cached);
+                renderHistoryTable();
+                updateStoreMetrics();
+            } else {
+                document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--red-text); padding: 20px;">অফলাইন মোড: কোনো লোকাল ডাটা ক্যাশ করা নেই।</td></tr>`;
+            }
         }
 
         function cleanPhoneNumber(phone) {
@@ -699,24 +744,55 @@
             };
 
             transactions.unshift(newTx);
+            localStorage.setItem('sakura_market_cache', JSON.stringify(transactions));
             renderHistoryTable();
             updateStoreMetrics();
 
-            syncToGoogleSheets(newTx, 'add');
+            if (navigator.onLine) {
+                syncToGoogleSheets(newTx, 'add');
+                alert('✅ নতুন লেনদেন সফলভাবে গুগল শিটে সিংক হয়েছে!');
+            } else {
+                queueOfflineAction({ data: newTx, actionType: 'add' });
+                alert('💾 অফলাইন মোড: লেনদেন লোকাললি সেভ হয়েছে। ইন্টারনেট আসলে অটো-সিংক হবে!');
+            }
 
             document.getElementById('txAmount').value = '';
             document.getElementById('custPhone').value = '';
             document.getElementById('custName').value = '';
             document.getElementById('custDob').value = '';
-            
-            alert('✅ নতুন লেনদেন সফলভাবে গুগল শিটে সিংক হয়েছে!');
+        }
+
+        function queueOfflineAction(actionPayload) {
+            const queue = JSON.parse(localStorage.getItem('sakura_market_offline_queue') || '[]');
+            queue.push(actionPayload);
+            localStorage.setItem('sakura_market_offline_queue', JSON.stringify(queue));
+        }
+
+        async function syncOfflineTransactions() {
+            const queue = JSON.parse(localStorage.getItem('sakura_market_offline_queue') || '[]');
+            if (queue.length > 0 && navigator.onLine) {
+                let remainingQueue = [];
+                for (const item of queue) {
+                    try {
+                        const payload = { ...item.data, action: item.actionType };
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    } catch (err) {
+                        console.error('Offline sync item failed:', err);
+                        remainingQueue.push(item);
+                    }
+                }
+                localStorage.setItem('sakura_market_offline_queue', JSON.stringify(remainingQueue));
+                setTimeout(fetchDataFromGoogleSheets, 1500);
+            }
         }
 
         function syncToGoogleSheets(data, actionType = 'add') {
-            const payload = {
-                ...data,
-                action: actionType
-            };
+            const payload = { ...data, action: actionType };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -725,24 +801,31 @@
                 body: JSON.stringify(payload)
             }).then(() => {
                 setTimeout(fetchDataFromGoogleSheets, 1500);
-            }).catch(err => console.error('Sync Error:', err));
+            }).catch(err => {
+                console.warn('Sync failed, queuing offline:', err);
+                queueOfflineAction({ data, actionType });
+            });
         }
 
         function deleteTransaction(id) {
             if (confirm('⚠️ আপনি কি নিশ্চিত যে এই লেনদেনটি মুছে ফেলতে চান?')) {
                 const txToDelete = transactions.find(t => String(t.id) === String(id));
                 if (txToDelete) {
-                    syncToGoogleSheets(txToDelete, 'delete');
+                    if (navigator.onLine) {
+                        syncToGoogleSheets(txToDelete, 'delete');
+                    } else {
+                        queueOfflineAction({ data: txToDelete, actionType: 'delete' });
+                    }
                 }
 
                 transactions = transactions.filter(t => String(t.id) !== String(id));
+                localStorage.setItem('sakura_market_cache', JSON.stringify(transactions));
                 renderHistoryTable();
                 updateStoreMetrics();
                 searchCustomerSummation();
             }
         }
 
-        // WhatsApp Receipt PNG Generator Function
         function sendWhatsAppReceipt(id) {
             const tx = transactions.find(t => String(t.id) === String(id));
             if (!tx) return;
@@ -772,13 +855,11 @@
                         `Sakura Market, Sylhet.`
                     );
 
-                    // Download PNG Receipt Automatically
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = `Sakura_Receipt_${tx.name}.png`;
                     link.click();
 
-                    // Open WhatsApp Chat Directly
                     window.open(`https://wa.me/${phoneClean}?text=${textMsg}`, '_blank');
                 });
             });
