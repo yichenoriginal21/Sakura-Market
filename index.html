@@ -732,15 +732,16 @@
             const type = document.getElementById('txType').value;
             const computedPoints = calculatePoints(amount, type);
 
+            // Exact property mapping matching Google Apps Script columns: id, name, phone, dob, type, amount, points
             const newTx = {
                 id: String(Date.now()),
                 timestamp: new Date().toLocaleString('bn-BD'),
                 name: name,
                 phone: phone,
                 dob: dob,
+                type: type,
                 amount: type === 'redeem' ? 0 : amount,
-                points: computedPoints,
-                type: type
+                points: computedPoints
             };
 
             transactions.unshift(newTx);
@@ -799,8 +800,6 @@
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).then(() => {
-                setTimeout(fetchDataFromGoogleSheets, 1500);
             }).catch(err => {
                 console.warn('Sync failed, queuing offline:', err);
                 queueOfflineAction({ data, actionType });
