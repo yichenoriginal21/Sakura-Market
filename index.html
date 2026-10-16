@@ -635,7 +635,7 @@
             });
         }
 
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmq8KPhAomoZKCuFTt_A1Xs483vnaEMNgBipZs2xuSrQWS75-puWiEpBmRVgXvOgCImQ/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbza3Yb4UuN2C1OWRvS-zUFLCTIfUpxuG00gNYwsMkeRP3o_I9WuhQLsYvCueQfZXAm6Cg/exec"; 
 
         let transactions = [];
 
@@ -776,9 +776,11 @@
         }
 
         async function syncOfflineTransactions() {
-            const queue = JSON.parse(localStorage.getItem('sakura_market_offline_queue') || '[]');
+            let queue = JSON.parse(localStorage.getItem('sakura_market_offline_queue') || '[]');
             if (queue.length > 0 && navigator.onLine) {
-                let remainingQueue = [];
+                // Clear queue from localStorage immediately to prevent loops
+                localStorage.removeItem('sakura_market_offline_queue');
+
                 for (const item of queue) {
                     try {
                         const payload = { ...item.data, action: item.actionType };
@@ -788,12 +790,13 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(payload)
                         });
+                        // Add short delay between items for Apps Script LockService processing
+                        await new Promise(resolve => setTimeout(resolve, 500));
                     } catch (err) {
-                        console.error('Offline sync item failed:', err);
-                        remainingQueue.push(item);
+                        console.error('Offline sync item failed, re-queueing:', err);
+                        queueOfflineAction(item);
                     }
                 }
-                localStorage.setItem('sakura_market_offline_queue', JSON.stringify(remainingQueue));
                 setTimeout(fetchDataFromGoogleSheets, 1500);
             }
         }
@@ -921,7 +924,7 @@
                     <tr>
                         <td style="font-size: 11px; color: var(--text-muted);">${t.timestamp}</td>
                         <td><strong>${t.name}</strong><br><span style="font-size:11px; color:var(--text-muted);">${t.phone}</span></td>
-                        <td>typeBadge</td>
+                        <td>${typeBadge}</td>
                         <td>৳ ${parseFloat(t.amount || 0).toLocaleString()}</td>
                         <td class="${ptsClass}"><strong>${ptsSign}${parseFloat(t.points).toFixed(2)}</strong></td>
                         <td>
