@@ -724,6 +724,10 @@
         function handleFormSubmit(e) {
             e.preventDefault();
 
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn.disabled) return;
+            submitBtn.disabled = true;
+
             const name = document.getElementById('custName').value.trim();
             const rawPhone = document.getElementById('custPhone').value.trim();
             const phone = '+' + cleanPhoneNumber(rawPhone);
@@ -732,7 +736,6 @@
             const type = document.getElementById('txType').value;
             const computedPoints = calculatePoints(amount, type);
 
-            // Exact property mapping matching Google Apps Script columns: id, name, phone, dob, type, amount, points
             const newTx = {
                 id: String(Date.now()),
                 timestamp: new Date().toLocaleString('bn-BD'),
@@ -751,7 +754,6 @@
 
             if (navigator.onLine) {
                 syncToGoogleSheets(newTx, 'add');
-                alert('✅ নতুন লেনদেন সফলভাবে গুগল শিটে সিংক হয়েছে!');
             } else {
                 queueOfflineAction({ data: newTx, actionType: 'add' });
                 alert('💾 অফলাইন মোড: লেনদেন লোকাললি সেভ হয়েছে। ইন্টারনেট আসলে অটো-সিংক হবে!');
@@ -761,6 +763,10 @@
             document.getElementById('custPhone').value = '';
             document.getElementById('custName').value = '';
             document.getElementById('custDob').value = '';
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+            }, 2000);
         }
 
         function queueOfflineAction(actionPayload) {
@@ -915,7 +921,7 @@
                     <tr>
                         <td style="font-size: 11px; color: var(--text-muted);">${t.timestamp}</td>
                         <td><strong>${t.name}</strong><br><span style="font-size:11px; color:var(--text-muted);">${t.phone}</span></td>
-                        <td>${typeBadge}</td>
+                        <td>typeBadge</td>
                         <td>৳ ${parseFloat(t.amount || 0).toLocaleString()}</td>
                         <td class="${ptsClass}"><strong>${ptsSign}${parseFloat(t.points).toFixed(2)}</strong></td>
                         <td>
